@@ -1,0 +1,14 @@
+apiVersion: tekton.dev/v1beta1
+kind: PipelineRun
+metadata:
+  name: pack-build-builder-push-run
+spec:
+  pipelineRef:
+    name: pack-build-builder-push
+  workspaces:
+    - name: source
+      persistentVolumeClaim:
+        claimName: ubi-builder
+  params:
+    - name: packCmd
+      value: builder

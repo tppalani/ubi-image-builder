@@ -1,0 +1,44 @@
+---
+apiVersion: tekton.dev/v1beta1
+kind: Pipeline
+metadata:
+  name: pack-build-builder-push
+  labels:
+    app.kubernetes.io/version: '0.1'
+  annotations:
+    tekton.dev/pipelines.minVersion: '0.50.0'
+    tekton.dev/tags: build, push, builder
+    tekton.dev/platforms: "linux/amd64"
+spec:
+  description: >-
+    This Pipeline builds a buildpacks builder image using pack client.
+  workspaces:
+    - name: source
+      description: The workspace containing the source code of the builder project
+  params:
+    - name: imageUrl
+      type: string
+      description: Pack image url
+      default: buildpacksio/pack
+    - name: imageTag
+      type: string
+      description: Pack image tag
+      default: latest
+    - name: packCmd
+      type: string
+      description: Pack command to execute
+      default: -h
+  tasks:
+    - name: pack
+      taskRef:
+        name: pack
+      params:
+        - name: PACK_IMAGE
+          value: '$(params.imageUrl)'
+        - name: PACK_VERSION
+          value: '$(params.imageTag)'
+        - name: PACK_CMD
+          value: '$(params.packCmd)'
+      workspaces:
+        - name: source
+          workspace: source

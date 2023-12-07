@@ -1,0 +1,47 @@
+---
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  annotations:
+    tekton.dev/pipelines.minVersion: 0.50.0
+    tekton.dev/categories: Build
+    tekton.dev/tags: 'pack, image builder, container build'
+    tekton.dev/displayName: "asciidoctor text processor"
+    tekton.dev/platforms: "linux/amd64"
+  labels:
+    app.kubernetes.io/version: '0.1'
+  name: pack
+spec:
+  description: >-
+    Buildpack pack client - https://buildpacks.io/docs/tools/pack/
+  params:
+    - name: PACK_EXPERIMENTAL
+      default: false
+      description: Enable experimental features
+      type: boolean
+    - name: PACK_IMAGE
+      default: buildpacksio/pack
+      description: The image to use for the pack client.
+      type: string
+    - name: PACK_CMD
+      description: The Arguments to be passed to the pack command.
+      type: string
+    - name: PACK_VERSION
+      default: latest
+      description: Pack client version
+      type: string
+  steps:
+    - name: pack
+      image: $(params.PACK_IMAGE):$(params.PACK_VERSION)
+      workingDir: $(workspaces.source.path)
+      env:
+        - name: PACK_CMD
+          value: "$(params.PACK_CMD)"
+      script: |
+        if [ "$(params.PACK_EXPERIMENTAL)" = "true" ]; then
+          pack config experimental true
+        fi
+        pack "${PACK_CMD}" -v
+  workspaces:
+    - description: A workspace that contains fetched git repo.
+      name: source

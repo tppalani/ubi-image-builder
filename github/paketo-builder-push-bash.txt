@@ -1,0 +1,54 @@
+
+######################################################################
+## Begin ENVIRONMENT VARIABLES section
+######################################################################
+export PAKETO_BUILDPACKS_DOCKERHUB_USERNAME=<CHANGE_ME: secrets.PAKETO_BUILDPACKS_DOCKERHUB_USERNAME >
+export PAKETO_BUILDPACKS_DOCKERHUB_PASSWORD=<CHANGE_ME: secrets.PAKETO_BUILDPACKS_DOCKERHUB_PASSWORD >
+export DOCKERHUB_ORG=paketocommunity
+
+######################################################################
+## End ENVIRONMENT VARIABLES section
+######################################################################
+
+######################################################################
+## Begin JOBS section
+######################################################################
+
+######################################################################
+## failure
+######################################################################
+################# end job #################
+
+######################################################################
+## push
+######################################################################
+# Step: Parse Event
+echo "tag=$(jq -r '.release.tag_name' "${GITHUB_EVENT_PATH}" | sed s/^v//)" >> "$GITHUB_OUTPUT"
+
+# Step: Get pack version
+version=$(jq -r .pack "scripts/.util/tools.json")
+echo "version=${version#v}" >> "$GITHUB_OUTPUT"
+
+# Step: Enable Experimental Pack Features
+pack config experimental true
+
+# Step: Create Builder Image
+pack builder create builder --config builder.toml
+
+# Step: Push To Dockerhub
+# Strip off the Github org prefix from repo name
+# paketo-buildpacks/builder-with-some-name --> builder-with-some-name
+registry_repo=$(echo "${{ github.repository }}" | sed 's/^.*\///')
+
+echo "${PAKETO_BUILDPACKS_DOCKERHUB_PASSWORD}" | docker login --username "${PAKETO_BUILDPACKS_DOCKERHUB_USERNAME}" --password-stdin
+docker tag builder "${DOCKERHUB_ORG}/${registry_repo}:latest"
+docker tag builder "${DOCKERHUB_ORG}/${registry_repo}:${{ steps.event.outputs.tag }}"
+
+docker push "${DOCKERHUB_ORG}/${registry_repo}:latest"
+docker push "${DOCKERHUB_ORG}/${registry_repo}:${{ steps.event.outputs.tag }}"
+
+################# end job #################
+
+######################################################################
+## End JOBS section
+######################################################################
