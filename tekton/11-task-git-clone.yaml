@@ -15,7 +15,7 @@ spec:
   steps:
     - name: clone
       image: quay.io/redhat-cop/ubi8-git:v1.0
-      workingDir: $(workspaces.project-dir.path)
+      workingDir: $(workspaces.source-dir.path)
       command:
         - sh
         - -c

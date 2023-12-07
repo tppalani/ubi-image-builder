@@ -23,9 +23,10 @@ spec:
       default: buildpacksio/pack
       description: The image to use for the pack client.
       type: string
-    - name: PACK_CMD
+    - name: PACK_ARGS
+      default: []
       description: The Arguments to be passed to the pack command.
-      type: string
+      type: array
     - name: PACK_VERSION
       default: latest
       description: Pack client version
@@ -33,10 +34,16 @@ spec:
   workspaces:
     - description: A workspace that contains fetched git repo.
       name: source-dir
+    - name: pack-config-toml
+      description: The workspace containing the pack config.toml file
   steps:
     - name: pack
       image: $(params.PACK_IMAGE):$(params.PACK_VERSION)
-      workingDir: $(workspaces.source.path)
+      workingDir: $(workspaces.source-dir.path)
+      env:
+        - name: CNB_EXPERIMENTAL_MODE
+          value: warn
+        - name: PACK_HOME
+          value: $(workspaces.pack-config-toml.path)
       args:
-        - $(params.PACK_CMD)
-        - -v
+        - "$(params.PACK_ARGS[*])"

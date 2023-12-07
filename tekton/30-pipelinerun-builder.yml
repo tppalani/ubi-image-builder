@@ -10,8 +10,17 @@ spec:
     - name: source-dir
       persistentVolumeClaim:
         claimName: ubi-builder-vol
+    - name: pack-config-toml
+      configMap:
+        name: pack-config-toml
   params:
-    - name: packCmd
-      value: "builder create builder --config ubi-builder.toml"
-    - name: gitProjectUrl
+    - name: packCmdBuilderArgs
+      value:
+      - builder
+      - create
+      - -v
+      - quay.io/swowdrop/ubi-builder
+      - --config
+      - ubi-builder.toml
+    - name: gitUbiBuilderUrl
       value: https://github.com/redhat-buildpacks/ubi-image-builder.git

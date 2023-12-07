@@ -1,0 +1,103 @@
+---
+apiVersion: tekton.dev/v1beta1
+kind: Pipeline
+metadata:
+  name: pack-build-builder-push
+  labels:
+    app.kubernetes.io/version: '0.1'
+  annotations:
+    tekton.dev/pipelines.minVersion: '0.50.0'
+    tekton.dev/tags: build, push, builder
+    tekton.dev/platforms: "linux/amd64"
+spec:
+  description: >-
+    This Pipeline builds a buildpacks builder image using pack client.
+  workspaces:
+    - name: source-dir
+      description: The workspace containing the source code of the builder project
+    - name: pack-config-toml
+      description: The workspace containing the pack config.toml file
+
+  params:
+    - name: gitUbiBuilderUrl
+      type: string
+      description: Url of the git project containing the ubi builder imageproject
+      default: ""
+    - name: imageUrl
+      type: string
+      description: Pack image url
+      default: buildpacksio/pack
+    - name: imageTag
+      type: string
+      description: Pack image tag
+      default: latest
+    - name: packCmdBuilderArgs
+      type: array
+      description: Pack command and arguments to execute
+      default: [""]
+  tasks:
+    - name: git-clone
+      taskRef:
+        name: git-clone
+      params:
+        - name: GIT_PROJECT_URL
+          value: '$(params.gitUbiBuilderUrl)'
+      workspaces:
+        - name: source-dir
+          workspace: source-dir
+
+    #- # Enable Experimental Pack Features
+    #  name: pack-enable-experimental
+    #  runAfter:
+    #    - git-clone
+    #  taskRef:
+    #    name: pack
+    #  params:
+    #    - name: PACK_IMAGE
+    #      value: '$(params.imageUrl)'
+    #    - name: PACK_VERSION
+    #      value: '$(params.imageTag)'
+    #    - name: PACK_ARGS
+    #      value:
+    #        - config
+    #        - experimental
+    #        - "true"
+    #  workspaces:
+    #    - name: source-dir
+    #      workspace: source-dir
+
+    - name: check-pack-config
+      runAfter:
+        - git-clone
+      taskSpec:
+        steps:
+          - image: quay.io/centos/centos:latest
+            command:
+              - sh
+              - -c
+            args:
+              - ls -la $(workspaces.pack-config-toml.path)
+              #- ls -la $(workspaces.source-dir.path)
+      workspaces:
+        - name: source-dir
+          workspace: source-dir
+        - name: pack-config-toml
+          workspace: pack-config-toml
+
+    - name: pack
+      runAfter:
+        - check-pack-config
+      taskRef:
+        name: pack
+      params:
+        - name: PACK_IMAGE
+          value: '$(params.imageUrl)'
+        - name: PACK_VERSION
+          value: '$(params.imageTag)'
+        - name: PACK_ARGS
+          value: ["$(params.packCmdBuilderArgs)"]
+      workspaces:
+        - name: source-dir
+          workspace: source-dir
+        - name: pack-config-toml
+          workspace: pack-config-toml
