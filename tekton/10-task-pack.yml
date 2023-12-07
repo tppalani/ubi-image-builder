@@ -43,6 +43,8 @@ spec:
       env:
         - name: CNB_EXPERIMENTAL_MODE
           value: warn
+        - name: DOCKER_HOST
+          value: tcp://quarkus-dev:2376
         - name: PACK_HOME
           value: $(workspaces.pack-config-toml.path)
       args:
