@@ -7,9 +7,11 @@ spec:
   pipelineRef:
     name: pack-build-builder-push
   workspaces:
-    - name: source
+    - name: source-dir
       persistentVolumeClaim:
         claimName: ubi-builder-vol
   params:
     - name: packCmd
-      value: builder
+      value: "builder create builder --config ubi-builder.toml"
+    - name: gitProjectUrl
+      value: https://github.com/redhat-buildpacks/ubi-image-builder.git

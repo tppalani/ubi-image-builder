@@ -13,9 +13,13 @@ spec:
   description: >-
     This Pipeline builds a buildpacks builder image using pack client.
   workspaces:
-    - name: source
+    - name: source-dir
       description: The workspace containing the source code of the builder project
   params:
+    - name: gitProjectUrl
+      type: string
+      description: Url of the git project containing the ubi builder imageproject
+      default: ""
     - name: imageUrl
       type: string
       description: Pack image url
@@ -29,7 +33,21 @@ spec:
       description: Pack command to execute
       default: -h
   tasks:
+    - name: git-clone
+      runAfter:
+        - rm-workspace
+      taskRef:
+        name: git-clone
+      params:
+        - name: GIT_PROJECT_URL
+          value: '$(params.gitProjectUrl)'
+      workspaces:
+        - name: source-dir
+          workspace: source-dir
+
     - name: pack
+      runAfter:
+        - git-clone
       taskRef:
         name: pack
       params:
@@ -40,5 +58,5 @@ spec:
         - name: PACK_CMD
           value: '$(params.packCmd)'
       workspaces:
-        - name: source
-          workspace: source
+        - name: source-dir
+          workspace: source-dir

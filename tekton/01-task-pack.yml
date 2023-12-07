@@ -30,6 +30,9 @@ spec:
       default: latest
       description: Pack client version
       type: string
+  workspaces:
+    - description: A workspace that contains fetched git repo.
+      name: source-dir
   steps:
     - name: pack
       image: $(params.PACK_IMAGE):$(params.PACK_VERSION)
@@ -37,6 +40,3 @@ spec:
       args:
         - $(params.PACK_CMD)
         - -v
-  workspaces:
-    - description: A workspace that contains fetched git repo.
-      name: source
