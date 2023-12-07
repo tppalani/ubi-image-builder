@@ -1,0 +1,72 @@
+apiVersion: kubevirt.io/v1
+kind: VirtualMachine
+metadata:
+  name: fedora-vm
+  labels:
+    app: fedora-vm
+spec:
+  dataVolumeTemplates:
+    - apiVersion: cdi.kubevirt.io/v1beta1
+      kind: DataVolume
+      metadata:
+        name: fedora-vm-disk
+      spec:
+        pvc:
+          accessModes:
+            - ReadWriteOnce
+          resources:
+            requests:
+              storage: 11Gi
+        source:
+          pvc:
+            namespace: vm-images
+            name: podman-remote
+  running: true
+  template:
+    metadata:
+      labels:
+        kubevirt.io/domain: fedora-vm
+        kubevirt.io/size: small
+    spec:
+      accessCredentials:
+        - sshPublicKey:
+            propagationMethod:
+              configDrive: {}
+            source:
+              secret:
+                secretName: fedora-vm-ssh-key
+      domain:
+        cpu:
+          cores: 1
+          sockets: 1
+          threads: 1
+        devices:
+          disks:
+            - disk:
+                bus: virtio
+              name: rootdisk
+            - disk:
+                bus: virtio
+              name: cloudinitdisk
+          interfaces:
+            - masquerade: {}
+              model: virtio
+              name: default
+          networkInterfaceMultiqueue: true
+          rng: {}
+        resources:
+          requests:
+            memory: 2Gi
+      networks:
+        - name: default
+          pod: {}
+      terminationGracePeriodSeconds: 180
+      volumes:
+        - cloudInitConfigDrive:
+            userData: |-
+              #cloud-config
+              hostname: fedora-vm
+          name: cloudinitdisk
+        - dataVolume:
+            name: fedora-vm-disk
+          name: rootdisk

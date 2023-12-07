@@ -30,8 +30,45 @@ kubectl wait deployment -n tekton-pipelines tekton-pipelines-webhookubectl --for
 kubectl apply -f https://storage.googleapis.com/tekton-releases/dashboard/latest/release.yaml
 VM_IP=127.0.0.1                                                                                                       
 kubectl create ingress tekton-ui -n tekton-pipelines --class=nginx --rule="tekton-ui.$VM_IP.nip.io/*=tekton-dashboard:9097"
+
+export KUBEVIRT_VERSION=v1.1.0
+export KUBEVIRT_CDI_VERSION=v1.58.0
+export KUBEVIRT_COMMON_INSTANCETYPES_VERSION=v0.3.2
+echo "Deploying KubeVirt"
+kubectl apply -f "https://github.com/kubevirt/kubevirt/releases/download/${KUBEVIRT_VERSION}/kubevirt-operator.yaml"
+kubectl apply -f "https://github.com/kubevirt/kubevirt/releases/download/${KUBEVIRT_VERSION}/kubevirt-cr.yaml"
+kubectl -n kubevirt patch kubevirt kubevirt --type=merge --patch '{"spec":{"configuration":{"developerConfiguration":{"useEmulation":true}}}}'
+
+echo "Deploying KubeVirt containerized-data-importer"
+kubectl apply -f "https://github.com/kubevirt/containerized-data-importer/releases/download/${KUBEVIRT_CDI_VERSION}/cdi-operator.yaml"
+kubectl apply -f "https://github.com/kubevirt/containerized-data-importer/releases/download/${KUBEVIRT_CDI_VERSION}/cdi-cr.yaml"
+
+echo "Waiting for KubeVirt to be ready"
+kubectl wait --for=condition=Available kubevirt kubevirt --namespace=kubevirt --timeout=5m
+          
+echo "Patch the StorageProfile to use the storageclass standard and give ReadWrite access"
+kubectl patch --type merge -p '{"spec": {"claimPropertySets": [{"accessModes": ["ReadWriteOnce"]}]}}' StorageProfile standard
+
+echo "Grant more rights to the default serviceaccount to access Kubevirt & Kubevirt CDI"
+kubectl create clusterrolebinding pod-kubevirt-viewer --clusterrole=kubevirt.io:view --serviceaccount=default:default
+kubectl create clusterrolebinding cdi-kubevirt-viewer --clusterrole=cdi.kubevirt.io:view --serviceaccount=default:default
+
+echo "Creating the kubernetes secret storing the public key"
+kubectl create secret generic fedora-vm-ssh-key --from-file=key=$HOME/.ssh/id_rsa.pub     
+
+echo "Creating a DataVolume using as registry image our customized Fedora Cloud OS packaging: podman, socat"
+kubectl create ns vm-images
+kubectl apply -n vm-images -f resources/01-quay-to-pvc-datavolume.yml
+
+echo "Creating the Fedora VM hosting podman & socat and exposing it under port => <VM_IP>:2376"
+kubectl apply -f resources/02-fedora-dev-virtualmachine.yml
+
+echo "Get the VM IP to ssh into it (optional"
+VM_IP=$(kubectl get vmi -o jsonpath='{.items[0].status.interfaces[0].ipAddress}')
 ```
-When done, you can install the packubectl pipeline able to build thje builder image 
+
+
+When done, you can install the pack `ubi builder` pipeline: 
 ```bash
 kubectl delete -f tekton; kubectl apply -f tekton;
 tkn pipelinerun logs pack-build-builder-push-run -f

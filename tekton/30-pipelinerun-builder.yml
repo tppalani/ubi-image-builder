@@ -22,5 +22,6 @@ spec:
       - quay.io/swowdrop/ubi-builder
       - --config
       - ubi-builder.toml
+
     - name: gitUbiBuilderUrl
       value: https://github.com/redhat-buildpacks/ubi-image-builder.git
