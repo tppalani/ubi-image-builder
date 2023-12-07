@@ -16,9 +16,9 @@ spec:
     Buildpack pack client - https://buildpacks.io/docs/tools/pack/
   params:
     - name: PACK_EXPERIMENTAL
-      default: false
+      default: "false"
       description: Enable experimental features
-      type: boolean
+      type: string
     - name: PACK_IMAGE
       default: buildpacksio/pack
       description: The image to use for the pack client.
@@ -34,14 +34,9 @@ spec:
     - name: pack
       image: $(params.PACK_IMAGE):$(params.PACK_VERSION)
       workingDir: $(workspaces.source.path)
-      env:
-        - name: PACK_CMD
-          value: "$(params.PACK_CMD)"
-      script: |
-        if [ "$(params.PACK_EXPERIMENTAL)" = "true" ]; then
-          pack config experimental true
-        fi
-        pack "${PACK_CMD}" -v
+      args:
+        - $(params.PACK_CMD)
+        - -v
   workspaces:
     - description: A workspace that contains fetched git repo.
       name: source

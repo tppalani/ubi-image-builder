@@ -1,3 +1,4 @@
+---
 apiVersion: tekton.dev/v1beta1
 kind: PipelineRun
 metadata:
@@ -8,7 +9,7 @@ spec:
   workspaces:
     - name: source
       persistentVolumeClaim:
-        claimName: ubi-builder
+        claimName: ubi-builder-vol
   params:
     - name: packCmd
       value: builder
