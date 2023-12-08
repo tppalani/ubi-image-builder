@@ -16,7 +16,7 @@ spec:
       - -v
       - quay.io/swowdrop/ubi-builder
       - --config
-      - $(workspaces.source-dir.path)/ubi-builder.toml
+      - ubi-builder.toml
       - --publish
 
   workspaces:

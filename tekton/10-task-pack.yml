@@ -34,16 +34,17 @@ spec:
   workspaces:
     - name: source-dir
     - name: pack-workspace
+      mountPath: /workspace
   steps:
     - name: pack
       image: $(params.PACK_IMAGE):$(params.PACK_VERSION)
-      workingDir: $(workspaces.pack-workspace.path)
+      workingDir: $(workspaces.source-dir.path)
       env:
         - name: CNB_EXPERIMENTAL_MODE
           value: warn
         - name: DOCKER_HOST
           value: tcp://quarkus-dev:2376
         - name: PACK_HOME
-          value: $(workspaces.pack-config-toml.path)
+          value: $(workspaces.pack-workspace.path)
       args:
         - "$(params.PACK_ARGS[*])"

@@ -74,15 +74,25 @@ spec:
             script: |
               echo "Copy pack config.toml to $(workspaces.pack-workspace.path)"
               cp $(workspaces.data-store.path)/config.toml $(workspaces.pack-workspace.path)
-              
+      workspaces:
+        - name: data-store
+          workspace: data-store
+        - name: pack-workspace
+          workspace: pack-workspace
+
+    - name: list-files
+      runAfter:
+        - fetch-pack-config
+      taskSpec:
+        steps:
+          - image: quay.io/centos/centos:latest
+            script: |
               echo "List files under $(workspaces.pack-workspace.path)"
               ls -la $(workspaces.pack-workspace.path)/
               
               echo "List files under $(workspaces.source-dir.path)"
               ls -la $(workspaces.source-dir.path)/
       workspaces:
-        - name: data-store
-          workspace: data-store
         - name: pack-workspace
           workspace: pack-workspace
         - name: source-dir
