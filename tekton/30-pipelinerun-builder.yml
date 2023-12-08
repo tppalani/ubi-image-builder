@@ -4,6 +4,7 @@ kind: PipelineRun
 metadata:
   name: pack-build-builder-push-run
 spec:
+  #serviceAccountName: buildpacks
   pipelineRef:
     name: pack-build-builder-push
   params:
@@ -31,3 +32,5 @@ spec:
         sources:
           - configMap:
               name: pack-config-toml
+          - secret:
+              name: quay-creds

@@ -35,7 +35,11 @@ kubectl create ingress tekton-ui -n tekton-pipelines --class=nginx --rule="tekto
 
 echo "Disabling the affinity-assistant to avoid the error: more than one PersistentVolumeClaim is bound to a TaskRun = pod"
 kubectl patch cm feature-flags -n tekton-pipelines -p '{"data":{"disable-affinity-assistant":"true"}}'
+```
 
+### Install kubevirt (optional)
+
+```bash
 export KUBEVIRT_VERSION=v1.1.0
 export KUBEVIRT_CDI_VERSION=v1.58.0
 export KUBEVIRT_COMMON_INSTANCETYPES_VERSION=v0.3.2
@@ -72,8 +76,15 @@ echo "Get the VM IP to ssh into it (optional"
 VM_IP=$(kubectl get vmi -o jsonpath='{.items[0].status.interfaces[0].ipAddress}')
 ```
 
+To write the ubi builder image to a registry, it is needed to create a secret including your credentials
+```bash
+kubectl create secret docker-registry quay-creds \
+  --docker-username="<REGISTRY_USERNAME>" \
+  --docker-password="<REGISTRY_PASSWORD>" \
+  --docker-server="quay.io"
+```
 
-When done, you can install the pack `ubi builder` pipeline: 
+When done, you can install the `ubi pack builder` pipeline: 
 ```bash
 kubectl delete -f tekton; kubectl apply -f tekton;
 tkn pipelinerun logs pack-build-builder-push-run -f

@@ -65,7 +65,7 @@ spec:
     #    - name: source-dir
     #      workspace: source-dir
 
-    - name: fetch-pack-config
+    - name: fetch-config-secret
       runAfter:
         - git-clone
       taskSpec:
@@ -74,6 +74,10 @@ spec:
             script: |
               echo "Copy pack config.toml to $(workspaces.pack-workspace.path)"
               cp $(workspaces.data-store.path)/config.toml $(workspaces.pack-workspace.path)
+              
+              echo "Copy .dockerconfigjson to $(workspaces.pack-workspace.path)/.docker/config.json"
+              mkdir -p $(workspaces.pack-workspace.path)/.docker
+              cp $(workspaces.data-store.path)/.dockerconfigjson $(workspaces.pack-workspace.path)/.docker/config.json
       workspaces:
         - name: data-store
           workspace: data-store
@@ -82,15 +86,17 @@ spec:
 
     - name: list-files
       runAfter:
-        - fetch-pack-config
+        - fetch-config-secret
       taskSpec:
         steps:
-          - image: quay.io/centos/centos:latest
+          - name: list-source-workspace
+            image: quay.io/centos/centos:latest
             script: |
-              echo "List files under $(workspaces.pack-workspace.path)"
+              echo "List files under: $(workspaces.pack-workspace.path)"
               ls -la $(workspaces.pack-workspace.path)/
+              ls -la $(workspaces.pack-workspace.path)/.docker/
               
-              echo "List files under $(workspaces.source-dir.path)"
+              echo "List files under: $(workspaces.source-dir.path)"
               ls -la $(workspaces.source-dir.path)/
       workspaces:
         - name: pack-workspace
@@ -100,7 +106,7 @@ spec:
 
     - name: pack
       runAfter:
-        - fetch-pack-config
+        - list-files
       taskRef:
         name: pack
       params:
