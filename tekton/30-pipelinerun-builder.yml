@@ -30,7 +30,7 @@ spec:
     - name: data-store
       projected:
         sources:
-          - configMap:
+          - secret:
               name: pack-config-toml
           - secret:
               name: quay-creds
