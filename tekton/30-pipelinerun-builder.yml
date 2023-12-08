@@ -6,14 +6,9 @@ metadata:
 spec:
   pipelineRef:
     name: pack-build-builder-push
-  workspaces:
-    - name: source-dir
-      persistentVolumeClaim:
-        claimName: ubi-builder-vol
-    - name: pack-config-toml
-      configMap:
-        name: pack-config-toml
   params:
+    - name: gitUbiBuilderUrl
+      value: https://github.com/redhat-buildpacks/ubi-image-builder.git
     - name: packCmdBuilderArgs
       value:
       - builder
@@ -21,7 +16,18 @@ spec:
       - -v
       - quay.io/swowdrop/ubi-builder
       - --config
-      - ubi-builder.toml
+      - $(workspaces.source-dir.path)/ubi-builder.toml
+      - --publish
 
-    - name: gitUbiBuilderUrl
-      value: https://github.com/redhat-buildpacks/ubi-image-builder.git
+  workspaces:
+    - name: source-dir
+      persistentVolumeClaim:
+        claimName: ubi-builder-vol
+    - name: pack-workspace
+      persistentVolumeClaim:
+        claimName: pack-workspace-vol
+    - name: data-store
+      projected:
+        sources:
+          - configMap:
+              name: pack-config-toml

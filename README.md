@@ -20,9 +20,11 @@ command: `./appstudio_kubeconfig rh-buildpacks`
 
 ### Local tekton
 
-Before to test the project on the AppStudio cluster, you can create locally a kind cluster, deploy Tekton and test it
+Before to test the project on the AppStudio cluster, you can create locally a kind cluster, container regustry, deploy Tekton and test it
 ```bash
-curl -s -L "https://raw.githubusercontent.com/snowdrop/k8s-infra/main/kind/kind.sh" | bash -s install
+curl -s -L "https://raw.githubusercontent.com/snowdrop/k8s-infra/main/kind/kind.sh" | bash -s install --delete-kind-cluster                                   
+curl -s -L "https://raw.githubusercontent.com/snowdrop/k8s-infra/main/kind/registry.sh" | bash -s install --registry-name kind-registry.local
+
 kubectl apply --filename https://storage.googleapis.com/tekton-releases/pipeline/latest/release.yaml
 kubectl wait deployment -n tekton-pipelines tekton-pipelines-controller --for condition=Available=True --timeout=90s
 kubectl wait deployment -n tekton-pipelines tekton-pipelines-webhookubectl --for condition=Available=True --timeout=90s
@@ -30,6 +32,9 @@ kubectl wait deployment -n tekton-pipelines tekton-pipelines-webhookubectl --for
 kubectl apply -f https://storage.googleapis.com/tekton-releases/dashboard/latest/release.yaml
 VM_IP=127.0.0.1                                                                                                       
 kubectl create ingress tekton-ui -n tekton-pipelines --class=nginx --rule="tekton-ui.$VM_IP.nip.io/*=tekton-dashboard:9097"
+
+echo "Disabling the affinity-assistant to avoid the error: more than one PersistentVolumeClaim is bound to a TaskRun = pod"
+kubectl patch cm feature-flags -n tekton-pipelines -p '{"data":{"disable-affinity-assistant":"true"}}'
 
 export KUBEVIRT_VERSION=v1.1.0
 export KUBEVIRT_CDI_VERSION=v1.58.0

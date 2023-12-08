@@ -32,14 +32,12 @@ spec:
       description: Pack client version
       type: string
   workspaces:
-    - description: A workspace that contains fetched git repo.
-      name: source-dir
-    - name: pack-config-toml
-      description: The workspace containing the pack config.toml file
+    - name: source-dir
+    - name: pack-workspace
   steps:
     - name: pack
       image: $(params.PACK_IMAGE):$(params.PACK_VERSION)
-      workingDir: $(workspaces.source-dir.path)
+      workingDir: $(workspaces.pack-workspace.path)
       env:
         - name: CNB_EXPERIMENTAL_MODE
           value: warn
