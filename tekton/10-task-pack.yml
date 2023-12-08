@@ -40,12 +40,8 @@ spec:
       image: $(params.PACK_IMAGE):$(params.PACK_VERSION)
       workingDir: $(workspaces.source-dir.path)
       env:
-        #- name: CNB_EXPERIMENTAL_MODE
-        #  value: warn
-        #- name: DOCKER_CONFIG
-        #  value: $(workspaces.pack-workspace.path)/.docker/config.json
-        #- name: DOCKER_HOST
-        #  value: tcp://quarkus-dev:2376
+        - name: DOCKER_CONFIG
+          value: $(workspaces.pack-workspace.path)/.docker
         - name: PACK_HOME
           value: $(workspaces.pack-workspace.path)
       args:
