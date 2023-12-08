@@ -113,12 +113,12 @@ spec:
       taskRef:
         resolver: git
         params:
-    - name: url
-      value: https://github.com/redhat-buildpacks/ubi-image-builder.git
-    - name: revision
-      value: main
-    - name: pathInRepo
-      value: /tekton/task/pack/01/pack.yml
+        - name: url
+          value: https://github.com/redhat-buildpacks/ubi-image-builder.git
+        - name: revision
+          value: main
+        - name: pathInRepo
+          value: /tekton/task/pack/01/pack.yml
       params:
         - name: PACK_IMAGE
           value: '$(params.imageUrl)'
