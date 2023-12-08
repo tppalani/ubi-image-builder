@@ -4,7 +4,7 @@ metadata:
   annotations:
     build.appstudio.openshift.io/repo: https://github.com/redhat-buildpacks/ubi-image-builder?rev={{revision}}
     build.appstudio.redhat.com/commit_sha: '{{revision}}'
-    build.appstudio.redhat.com/pull_request_number: '{{pull_request_number}}'
+    # build.appstudio.redhat.com/pull_request_number: '{{pull_request_number}}'
     build.appstudio.redhat.com/target_branch: '{{target_branch}}'
     # This is a component annotation - not for pipelinerun appstudio.openshift.io/request: "configure-pac"
     pipelinesascode.tekton.dev/max-keep-runs: "3"
