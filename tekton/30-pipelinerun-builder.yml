@@ -15,7 +15,7 @@ spec:
       - builder
       - create
       - -v
-      - quay.io/swowdrop/ubi-builder
+      - quay.io/snowdrop/ubi-builder
       - --config
       - ubi-builder.toml
       - --publish
