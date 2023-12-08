@@ -84,15 +84,39 @@ kubectl create secret docker-registry quay-creds \
   --docker-server="quay.io"
 ```
 
-When done, you can install the `ubi pack builder` pipeline: 
+When done, you can install the yaml resources like the `ubi pack builder` pipeline: 
 ```bash
 kubectl delete -f tekton; kubectl apply -f tekton;
 tkn pipelinerun logs pack-build-builder-push-run -f
 ```
 
+## Test if the ubi builder image is working
+
+```bash
+mvn io.quarkus.platform:quarkus-maven-plugin:3.3.2:create \
+  -DprojectGroupId=dev.snowdrop \
+  -DprojectArtifactId=quarkus-hello \
+  -DprojectVersion=1.0 \
+  -Dextensions='resteasy-reactive,kubernetes,buildpack'
+
+cd quarkus-hello
+
+REGISTRY_HOST="kind-registry.local:5000"
+docker pull quay.io/snowdrop/ubi-builder:latest
+pack build ${REGISTRY_HOST}/quarkus-hello:1.0 \
+     --builder quay.io/snowdrop/ubi-builder \
+     -e BP_NATIVE_IMAGE="false" \
+     -e BP_MAVEN_BUILT_ARTIFACT="target/quarkus-app/lib/ target/quarkus-app/*.jar target/quarkus-app/app/ target/quarkus-app/quarkus/" \
+     -e BP_MAVEN_BUILD_ARGUMENTS="package -DskipTests=true -Dmaven.javadoc.skip=true -Dquarkus.package.type=fast-jar" \
+     --volume $HOME/.m2:/home/cnb/.m2:rw \
+     --path .  
+docker run -i --rm -p 8080:8080 kind-registry.local:5000/quarkus-hello:1.0
+curl localhost:8080/hello # in a separate terminal
+```
+
 ## Tips 
 
-To convert GitHub flows into bash scripts, use this [export-to-bash](https://github.com/snowdrop/export-github-flows/blob/main/README.md) project and the command
+To convert the GitHub flows into bash scripts, use this [export-to-bash](https://github.com/snowdrop/export-github-flows/blob/main/README.md) project and the command
     
 ```bash
 GIT_DIR=$(pwd)
