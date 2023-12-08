@@ -9,7 +9,6 @@ metadata:
     pipelinesascode.tekton.dev/max-keep-runs: "3"
     pipelinesascode.tekton.dev/on-cel-expression: event == "pull_request" && target_branch
       == "main"
-  creationTimestamp: null
   labels:
     appstudio.openshift.io/application: ubi-image-builder
     appstudio.openshift.io/component: ubi-image-builder

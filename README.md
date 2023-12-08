@@ -86,7 +86,8 @@ kubectl create secret docker-registry quay-creds \
 
 When done, you can install the yaml resources like the `ubi pack builder` pipeline: 
 ```bash
-kubectl delete -f tekton; kubectl apply -f tekton;
+kubectl delete -R -f tekton
+kubectl apply -R -f tekton
 tkn pipelinerun logs pack-build-builder-push-run -f
 ```
 

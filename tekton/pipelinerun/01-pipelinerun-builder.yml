@@ -6,7 +6,15 @@ metadata:
 spec:
   #serviceAccountName: buildpacks
   pipelineRef:
-    name: pack-build-builder-push
+    resolver: git
+    params:
+    - name: url
+      value: https://github.com/tektoncd/catalog.git
+    - name: revision
+      value: main
+    - name: pathInRepo
+      value: /tekton/pipeline/pack-builder-image/0.1/pack-builder-image.yml
+
   params:
     - name: gitUbiBuilderUrl
       value: https://github.com/redhat-buildpacks/ubi-image-builder.git
