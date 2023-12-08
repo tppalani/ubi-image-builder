@@ -1,0 +1,82 @@
+apiVersion: tekton.dev/v1
+kind: PipelineRun
+metadata:
+  annotations:
+    build.appstudio.openshift.io/repo: https://github.com/redhat-buildpacks/ubi-image-builder?rev={{revision}}
+    build.appstudio.redhat.com/commit_sha: '{{revision}}'
+    build.appstudio.redhat.com/pull_request_number: '{{pull_request_number}}'
+    build.appstudio.redhat.com/target_branch: '{{target_branch}}'
+    appstudio.openshift.io/request: "configure-pac"
+    pipelinesascode.tekton.dev/max-keep-runs: "3"
+    pipelinesascode.tekton.dev/on-cel-expression: event == "push" && target_branch
+      == "main"
+    # pipelinesascode.tekton.dev/pipeline: TODO
+  labels:
+    appstudio.openshift.io/application: ubi-image-builder
+    appstudio.openshift.io/component: ubi-image-builder
+    pipelines.appstudio.openshift.io/type: build
+    ubi.buildpack.snowdrop.dev/build: 1
+  name: ubi-image-builder-on-push
+  namespace: rh-buildpacks-tenant
+spec:
+  pipelineRef:
+    resolver: git
+    params:
+      - name: url
+        value: https://github.com/redhat-buildpacks/ubi-image-builder.git
+      - name: revision
+        value: main
+      - name: pathInRepo
+        value: /tekton/pipeline/pack-builder-image/01/pack-builder-image.yml
+
+  params:
+    - name: git-url
+      value: '{{repo_url}}'
+    - name: image-expires-after
+      value: 5d
+    - name: output-image
+      value: quay.io/redhat-user-workloads/rh-buildpacks-tenant/ubi-image-builder/ubi-image-builder:{{revision}}
+    - name: path-context
+      value: .
+    - name: revision
+      value: '{{revision}}'
+    # Pack client parameters
+    - name: gitUbiBuilderUrl
+      value: https://github.com/redhat-buildpacks/ubi-image-builder.git
+    - name: packCmdBuilderArgs
+      value:
+        - builder
+        - create
+        - -v
+        - quay.io/snowdrop/ubi-builder
+        - --config
+        - ubi-builder.toml
+        - --publish
+
+  workspaces:
+    - name: source-dir
+      volumeClaimTemplate:
+        spec:
+          accessModes:
+            - ReadWriteOnce
+          resources:
+            requests:
+              storage: 1Gi
+    - name: pack-workspace
+      volumeClaimTemplate:
+        spec:
+          accessModes:
+            - ReadWriteOnce
+          resources:
+            requests:
+              storage: 1Gi
+    - name: data-store
+      projected:
+        sources:
+          - secret:
+              name: pack-config-toml
+          - secret:
+              name: quay-creds
+    - name: git-auth
+      secret:
+        secretName: '{{ git_auth_secret }}'
