@@ -163,6 +163,7 @@ spec:
           params:
             - name: PACK_EXPERIMENTAL
               value: "true"
+              default: "false"
             - name: PACK_SOURCE_DIR
               value: "$(workspaces.source-dir.path)/source"
               default: "."
