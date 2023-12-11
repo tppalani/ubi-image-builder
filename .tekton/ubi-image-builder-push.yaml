@@ -140,9 +140,25 @@ spec:
           - name: source-dir
             workspace: source-dir
 
-      - name: pack
+      - name: test-command
         runAfter:
           - list-files
+        taskSpec:
+          steps:
+            - name: list-source-workspace
+              image: quay.io/centos/centos:latest
+              workingDir: $(workspaces.source-dir.path)/source
+              script: |
+                echo "List files under workingDir"
+                ls -la
+                cat ubi-builder.toml
+        workspaces:
+          - name: source-dir
+            workspace: source-dir
+
+      - name: pack
+        runAfter:
+          - test-command
         taskRef:
           resolver: git
           params:
