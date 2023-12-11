@@ -165,7 +165,7 @@ spec:
               value: "true"
               default: "false"
             - name: PACK_SOURCE_DIR
-              value: "$(workspaces.source-dir.path)/source"
+              value: "source"
               default: "."
             - name: PACK_IMAGE
               value: '$(params.imageUrl)'
