@@ -63,6 +63,18 @@ spec:
       description: Revision of the Source Repository
       name: revision
       type: string
+    - name: imageUrl
+      type: string
+      description: Pack image url
+      default: buildpacksio/pack
+    - name: imageTag
+      type: string
+      description: Pack image tag
+      default: latest
+    - name: packCmdBuilderArgs
+      type: array
+      description: Pack command and arguments to execute
+      default: [""]
     tasks:
       - name: clone-repository
         params:
