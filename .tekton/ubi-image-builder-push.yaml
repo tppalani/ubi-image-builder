@@ -153,8 +153,8 @@ spec:
             - name: pathInRepo
               value: /tekton/task/pack/01/pack.yml
         params:
-          - name: SOURCE_DIR
-            value: $(workspaces.source-dir.path)/source
+          - name: PACK_SOURCE_DIR
+            value: "$(workspaces.source-dir.path)/source"
           - name: PACK_IMAGE
             value: '$(params.imageUrl)'
           - name: PACK_VERSION

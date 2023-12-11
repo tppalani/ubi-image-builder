@@ -31,7 +31,7 @@ spec:
       default: latest
       description: Pack client version
       type: string
-    - name: SOURCE_DIR
+    - name: PACK_SOURCE_DIR
       default: .
       description: Directory containing the source files to build.
       type: string
@@ -42,7 +42,7 @@ spec:
   steps:
     - name: pack
       image: $(params.PACK_IMAGE):$(params.PACK_VERSION)
-      workingDir: $(workspaces.source-dir.path)/$(params.SOURCE_DIR)
+      workingDir: $(workspaces.source-dir.path)/$(params.PACK_SOURCE_DIR)
       env:
         - name: DOCKER_CONFIG
           value: $(workspaces.pack-workspace.path)/.docker
