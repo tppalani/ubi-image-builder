@@ -116,9 +116,32 @@ spec:
           - name: pack-workspace
             workspace: pack-workspace
 
-      - name: pack
+      - name: list-files
         runAfter:
           - fetch-config-secret
+        taskSpec:
+          steps:
+            - name: list-source-workspace
+              image: quay.io/centos/centos:latest
+              script: |
+                echo "List files under: $(workspaces.pack-workspace.path)"
+                ls -la $(workspaces.pack-workspace.path)/
+                
+                ls -la $(workspaces.pack-workspace.path)/.docker/
+                
+                cat $(workspaces.pack-workspace.path)/.docker/config.json
+                
+                echo "List files under: $(workspaces.source-dir.path)"
+                ls -la $(workspaces.source-dir.path)/
+        workspaces:
+          - name: pack-workspace
+            workspace: pack-workspace
+          - name: source-dir
+            workspace: source-dir
+
+      - name: pack
+        runAfter:
+          - list-files
         taskRef:
           resolver: git
           params:
