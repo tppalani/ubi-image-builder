@@ -133,6 +133,7 @@ spec:
                 
                 echo "List files under: $(workspaces.source-dir.path)"
                 ls -la $(workspaces.source-dir.path)/
+                ls -la $(workspaces.source-dir.path)/source
         workspaces:
           - name: pack-workspace
             workspace: pack-workspace
