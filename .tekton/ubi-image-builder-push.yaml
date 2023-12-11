@@ -31,6 +31,7 @@ spec:
   #      value: /tekton/pipeline/pack-builder-image/01/pack-builder-image.yml
 
   params:
+    # RHTAP parameters
     - name: git-url
       value: '{{repo_url}}'
     - name: source-dir
@@ -44,8 +45,12 @@ spec:
     - name: revision
       value: '{{revision}}'
     # Pack client parameters
-    - name: gitUbiBuilderUrl
-      value: https://github.com/redhat-buildpacks/ubi-image-builder.git
+    - name: registryName
+      value: quay.io
+    - name: registryOrg
+      value: snowdrop
+    - name: imageName
+      value: ubi-builder
     - name: packCmdBuilderArgs
       value:
         - builder
@@ -61,10 +66,10 @@ spec:
     - description: Source Repository URL
       name: git-url
       type: string
-    - default: ""
-      description: Revision of the Source Repository
+    - description: Revision of the Source Repository
       name: revision
       type: string
+      default: ""
     - # RHTAP Git clone task download the content of the project
       # under the following output directory: <WORKSPACE>/source
       # We define this parameter here to let the tasks
@@ -72,17 +77,17 @@ spec:
       description: Source directory
       name: source-dir
       type: string
-    - name: imageUrl
+    - description: Pack image url
+      name: imageUrl
       type: string
-      description: Pack image url
       default: buildpacksio/pack
-    - name: imageTag
+    - description: Pack image tag
+      name: imageTag
       type: string
-      description: Pack image tag
       default: latest
-    - name: packCmdBuilderArgs
+    - description: Pack command and arguments to execute
+      name: packCmdBuilderArgs
       type: array
-      description: Pack command and arguments to execute
       default: [""]
     tasks:
       - name: clone-repository
