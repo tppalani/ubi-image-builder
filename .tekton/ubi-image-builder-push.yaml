@@ -84,6 +84,26 @@ spec:
             workspace: source-dir
           - name: basic-auth
             workspace: git-auth
+
+      - name: fetch-config-secret
+        runAfter:
+          - clone-repository
+        taskSpec:
+          steps:
+            - image: quay.io/centos/centos:latest
+              script: |
+                echo "Copy pack config.toml to $(workspaces.pack-workspace.path)"
+                cp $(workspaces.data-store.path)/config.toml $(workspaces.pack-workspace.path)
+                
+                echo "Copy .dockerconfigjson to $(workspaces.pack-workspace.path)/.docker/config.json"
+                mkdir -p $(workspaces.pack-workspace.path)/.docker
+                cp $(workspaces.data-store.path)/.dockerconfigjson $(workspaces.pack-workspace.path)/.docker/config.json
+        workspaces:
+          - name: data-store
+            workspace: data-store
+          - name: pack-workspace
+            workspace: pack-workspace
+
   workspaces:
     - name: source-dir
       volumeClaimTemplate:
