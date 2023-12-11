@@ -149,49 +149,49 @@ spec:
               image: quay.io/centos/centos:latest
               workingDir: $(workspaces.source-dir.path)/source
               script: |
-                echo "List files under workingDir"
+                echo "List files under workingDir: $(workspaces.source-dir.path)/source"
                 ls -la
                 cat ubi-builder.toml
         workspaces:
           - name: source-dir
             workspace: source-dir
 
-      #- name: pack
-      #  runAfter:
-      #    - test-command
-      #  taskSpec:
-      #    params:
-      #      - name: PACK_EXPERIMENTAL
-      #        value: "true"
-      #        default: "false"
-      #      - name: PACK_SOURCE_DIR
-      #        value: "$(workspaces.source-dir.path)/source"
-      #        default: "."
-      #      - name: PACK_IMAGE
-      #        value: '$(params.imageUrl)'
-      #        default: "buildpacksio/pack"
-      #      - name: PACK_VERSION
-      #        value: '$(params.imageTag)'
-      #        default: "latest"
-      #      - name: PACK_ARGS
-      #        value: ["$(params.packCmdBuilderArgs)"]
-      #        default: []
-      #    steps:
-      #    - name: pack
-      #      image: $(params.PACK_IMAGE):$(params.PACK_VERSION)
-      #      workingDir: $(workspaces.source-dir.path)/$(params.PACK_SOURCE_DIR)
-      #      env:
-      #        - name: DOCKER_CONFIG
-      #          value: $(workspaces.pack-workspace.path)/.docker
-      #        - name: PACK_HOME
-      #          value: $(workspaces.pack-workspace.path)
-      #      args:
-      #        - "$(params.PACK_ARGS[*])"
-      #    workspaces:
-      #      - name: source-dir
-      #        workspace: source-dir
-      #      - name: pack-workspace
-      #        workspace: pack-workspace
+      - name: pack
+        runAfter:
+          - test-command
+        taskSpec:
+          params:
+            - name: PACK_EXPERIMENTAL
+              value: "true"
+              default: "false"
+            - name: PACK_SOURCE_DIR
+              value: "$(workspaces.source-dir.path)/source"
+              default: "."
+            - name: PACK_IMAGE
+              value: '$(params.imageUrl)'
+              default: "buildpacksio/pack"
+            - name: PACK_VERSION
+              value: '$(params.imageTag)'
+              default: "latest"
+            - name: PACK_ARGS
+              value: ["$(params.packCmdBuilderArgs)"]
+              default: []
+          steps:
+          - name: pack
+            image: $(params.PACK_IMAGE):$(params.PACK_VERSION)
+            workingDir: $(workspaces.source-dir.path)/$(params.PACK_SOURCE_DIR)
+            env:
+              - name: DOCKER_CONFIG
+                value: $(workspaces.pack-workspace.path)/.docker
+              - name: PACK_HOME
+                value: $(workspaces.pack-workspace.path)
+            args:
+              - "$(params.PACK_ARGS[*])"
+          workspaces:
+            - name: source-dir
+              workspace: source-dir
+            - name: pack-workspace
+              workspace: pack-workspace
 
       #- name: pack
       #  runAfter:
