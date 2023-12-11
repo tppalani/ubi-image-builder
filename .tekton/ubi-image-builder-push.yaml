@@ -117,7 +117,7 @@ spec:
           - name: basic-auth
             workspace: git-auth
 
-      - name: fetch-config-secret
+      - name: fetch-pack_config-registry_secret
         runAfter:
           - clone-repository
         taskSpec:
