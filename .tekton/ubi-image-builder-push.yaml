@@ -33,6 +33,8 @@ spec:
   params:
     - name: git-url
       value: '{{repo_url}}'
+    - name: source-dir
+      value: source
     - name: image-expires-after
       value: 5d
     - name: output-image
@@ -62,6 +64,13 @@ spec:
     - default: ""
       description: Revision of the Source Repository
       name: revision
+      type: string
+    - # RHTAP Git clone task download the content of the project
+      # under the following output directory: <WORKSPACE>/source
+      # We define this parameter here to let the tasks
+      # to specify properly the workingDir
+      description: Source directory
+      name: source-dir
       type: string
     - name: imageUrl
       type: string
@@ -131,71 +140,33 @@ spec:
                 
                 cat $(workspaces.pack-workspace.path)/.docker/config.json
                 
-                echo "List files under: $(workspaces.source-dir.path)"
-                ls -la $(workspaces.source-dir.path)/
-                ls -la $(workspaces.source-dir.path)/source
+                echo "List files under: $(workspaces.source-dir.path)/$(params.source-dir)"
+                ls -la $(workspaces.source-dir.path)/$(params.source-dir)
         workspaces:
           - name: pack-workspace
             workspace: pack-workspace
           - name: source-dir
             workspace: source-dir
 
-      - name: test-command
-        runAfter:
-          - list-files
-        taskSpec:
-          steps:
-            - name: list-source-workspace
-              image: quay.io/centos/centos:latest
-              workingDir: $(workspaces.source-dir.path)/source
-              script: |
-                echo "List files under workingDir: $(workspaces.source-dir.path)/source"
-                ls -la
-                cat ubi-builder.toml
-        workspaces:
-          - name: source-dir
-            workspace: source-dir
-
-      #- name: pack
+      #- name: test-command
       #  runAfter:
-      #    - test-command
+      #    - list-files
       #  taskSpec:
-      #    params:
-      #      - name: PACK_EXPERIMENTAL
-      #        value: "true"
-      #        default: "false"
-      #      - name: PACK_SOURCE_DIR
-      #        value: "source"
-      #        default: "."
-      #      - name: PACK_IMAGE
-      #        value: '$(params.imageUrl)'
-      #        default: "buildpacksio/pack"
-      #      - name: PACK_VERSION
-      #        value: '$(params.imageTag)'
-      #        default: "latest"
-      #      - name: PACK_ARGS
-      #        value: ["$(params.packCmdBuilderArgs)"]
-      #        default: []
       #    steps:
-      #    - name: pack
-      #      image: $(params.PACK_IMAGE):$(params.PACK_VERSION)
-      #      workingDir: $(workspaces.source-dir.path)/$(params.PACK_SOURCE_DIR)
-      #      env:
-      #        - name: DOCKER_CONFIG
-      #          value: $(workspaces.pack-workspace.path)/.docker
-      #        - name: PACK_HOME
-      #          value: $(workspaces.pack-workspace.path)
-      #      args:
-      #        - "$(params.PACK_ARGS[*])"
-      #    workspaces:
-      #      - name: source-dir
-      #        workspace: source-dir
-      #      - name: pack-workspace
-      #        workspace: pack-workspace
+      #      - name: list-source-workspace
+      #        image: quay.io/centos/centos:latest
+      #        workingDir: $(workspaces.source-dir.path)/source
+      #        script: |
+      #          echo "List files under workingDir: $(workspaces.source-dir.path)/source"
+      #          ls -la
+      #          cat ubi-builder.toml
+      #  workspaces:
+      #    - name: source-dir
+      #      workspace: source-dir
 
       - name: pack
         runAfter:
-          - test-command
+          - list-files
         taskRef:
           resolver: git
           params:
@@ -207,7 +178,7 @@ spec:
               value: /tekton/task/pack/01/pack.yml
         params:
           - name: PACK_SOURCE_DIR
-            value: "source"
+            value: '$(params.source-dir)'
           - name: PACK_IMAGE
             value: '$(params.imageUrl)'
           - name: PACK_VERSION
