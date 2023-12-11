@@ -15,7 +15,7 @@ metadata:
     appstudio.openshift.io/application: ubi-image-builder
     appstudio.openshift.io/component: ubi-image-builder
     pipelines.appstudio.openshift.io/type: build
-    ubi.buildpack.snowdrop.dev/build: "1"
+    ubi.buildpack.snowdrop.dev/build: "2"
   name: ubi-image-builder-on-push
   namespace: rh-buildpacks-tenant
 spec:
@@ -101,6 +101,31 @@ spec:
         workspaces:
           - name: data-store
             workspace: data-store
+          - name: pack-workspace
+            workspace: pack-workspace
+
+      - name: pack
+        runAfter:
+          - list-files
+        taskRef:
+          resolver: git
+          params:
+            - name: url
+              value: https://github.com/redhat-buildpacks/ubi-image-builder.git
+            - name: revision
+              value: main
+            - name: pathInRepo
+              value: /tekton/task/pack/01/pack.yml
+        params:
+          - name: PACK_IMAGE
+            value: '$(params.imageUrl)'
+          - name: PACK_VERSION
+            value: '$(params.imageTag)'
+          - name: PACK_ARGS
+            value: ["$(params.packCmdBuilderArgs)"]
+        workspaces:
+          - name: source-dir
+            workspace: source-dir
           - name: pack-workspace
             workspace: pack-workspace
 
