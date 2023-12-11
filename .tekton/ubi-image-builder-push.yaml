@@ -44,6 +44,8 @@ spec:
       value: .
     - name: revision
       value: '{{revision}}'
+    - name: debug
+      value: "false"
     # Pack client parameters
     - name: registryName
       value: quay.io
@@ -63,6 +65,10 @@ spec:
 
   pipelineSpec:
     params:
+    - description: A boolean value used to execute or not a task
+      default: "false"
+      name: debug
+      type: string
     - description: Source Repository URL
       name: git-url
       type: string
@@ -133,6 +139,10 @@ spec:
       - name: list-files
         runAfter:
           - fetch-config-secret
+        when:
+          - input: $(params.debug)
+            operator: in
+            values: [ "true" ]
         taskSpec:
           steps:
             - name: list-source-workspace
@@ -153,25 +163,9 @@ spec:
           - name: source-dir
             workspace: source-dir
 
-      #- name: test-command
-      #  runAfter:
-      #    - list-files
-      #  taskSpec:
-      #    steps:
-      #      - name: list-source-workspace
-      #        image: quay.io/centos/centos:latest
-      #        workingDir: $(workspaces.source-dir.path)/source
-      #        script: |
-      #          echo "List files under workingDir: $(workspaces.source-dir.path)/source"
-      #          ls -la
-      #          cat ubi-builder.toml
-      #  workspaces:
-      #    - name: source-dir
-      #      workspace: source-dir
-
       - name: pack
         runAfter:
-          - list-files
+          - fetch-config-secret
         taskRef:
           resolver: git
           params:
