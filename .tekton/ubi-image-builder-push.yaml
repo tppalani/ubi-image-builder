@@ -106,7 +106,7 @@ spec:
 
       - name: pack
         runAfter:
-          - list-files
+          - fetch-config-secret
         taskRef:
           resolver: git
           params:
