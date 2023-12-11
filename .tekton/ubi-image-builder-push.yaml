@@ -162,17 +162,19 @@ spec:
         taskSpec:
           params:
             - name: PACK_EXPERIMENTAL
-              default: "true"
-              description: Enable experimental features
-              type: string
+              value: "true"
             - name: PACK_SOURCE_DIR
               value: "$(workspaces.source-dir.path)/source"
+              default: "."
             - name: PACK_IMAGE
               value: '$(params.imageUrl)'
+              default: "buildpacksio/pack"
             - name: PACK_VERSION
               value: '$(params.imageTag)'
+              default: "latest"
             - name: PACK_ARGS
               value: ["$(params.packCmdBuilderArgs)"]
+              default: []
           steps:
           - name: pack
             image: $(params.PACK_IMAGE):$(params.PACK_VERSION)
