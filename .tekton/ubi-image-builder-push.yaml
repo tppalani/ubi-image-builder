@@ -170,7 +170,7 @@ spec:
             value: '$(params.output-image')
           - name: PACK_BUILDER_TOML
             value: ubi-builder.toml
-          - name: PACK_FLAGS
+          - name: PACK_CMD_FLAGS
             value: [ "$(params.packCmdBuilderFlags)" ]
         workspaces:
           - name: source-dir
