@@ -45,7 +45,7 @@ spec:
       mountPath: /workspace
   steps:
     - name: pack
-      image: $(params.PACK_CLI_IMAGE):$(params.PACK_VERSION)
+      image: $(params.PACK_CLI_IMAGE):$(params.PACK_CLI_IMAGE_VERSION)
       workingDir: $(workspaces.source-dir.path)/$(params.PACK_SOURCE_DIR)
       env:
         - name: DOCKER_CONFIG
