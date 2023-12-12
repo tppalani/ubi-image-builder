@@ -13,16 +13,20 @@ Paketo GitHub flows to build the:
 - Kubectl, Tekton installed & [Tekton client](https://tekton.dev/docs/cli/)
 - [krew](https://krew.sigs.k8s.io/), [oidc login](https://github.com/int128/kubelogin), [konfig](https://github.com/corneliusweig/konfig) & [ctx](https://github.com/ahmetb/kubectx)
 
+To access remotely to the `RHTAP AppStudio cluster`, add first to your `kubecfg` config file the cluster URL, context and OIDC's user using the 
+following bash script: `./appstudio_kubeconfig rh-buildpacks`
+
+**NOTE**: More information to log in to the cluster using OIDC is available [here](https://docs.google.com/document/d/1hFvQDH1H6MGNqTGfcZpyl2h8OIaynP8sokZohCS0Su0/edit#heading=h.bksi3q7km0i)
+
 ## Instructions
 
-To access remotely to the AppStudio cluster where the buildpacks image builder builds are taking place, customize first your kubecfg file using the 
-command: `./appstudio_kubeconfig rh-buildpacks`
+During the development of this project, you can either use a local kind cluster where Tekton has been deployed or use directly the `AppStudio cluster`.
 
-**NOTE**: More information to use kubectl login and to log in to the cluster using OIDC are available [here](https://docs.google.com/document/d/1hFvQDH1H6MGNqTGfcZpyl2h8OIaynP8sokZohCS0Su0/edit#heading=h.bksi3q7km0i)
+**NOTE**: Some hacks will be needed ss some differences exist between the RHTAP Pipeline(Run) definition and the [pack-builder-image.yml](tekton%2Fpipeline%2Fpack-builder-image%2F0.1%2Fpack-builder-image.yml) for local tests
 
 ### Local tekton
 
-Before to test the project on the AppStudio cluster, you can create locally a kind cluster, container registry, deploy Tekton and test it
+To create a cluster and install Tekton, execute the following commands:
 ```bash
 curl -s -L "https://raw.githubusercontent.com/snowdrop/k8s-infra/main/kind/kind.sh" | bash -s install --delete-kind-cluster                                   
 curl -s -L "https://raw.githubusercontent.com/snowdrop/k8s-infra/main/kind/registry.sh" | bash -s install --registry-name kind-registry.local
@@ -39,9 +43,9 @@ echo "Disabling the affinity-assistant to avoid the error: more than one Persist
 kubectl patch cm feature-flags -n tekton-pipelines -p '{"data":{"disable-affinity-assistant":"true"}}'
 ```
 
-### Install the Pipeline, task and resources
+### Install the Pipeline, tasks and resources
 
-To write the ubi builder image to a registry, it is needed to create a secret including your credentials
+Remark: To write the ubi builder image to a registry (quay.io, etc) , it is needed to create a secret including your credentials
 ```bash
 kubectl create secret docker-registry quay-creds \
   --docker-username="<REGISTRY_USERNAME>" \
@@ -56,7 +60,7 @@ kubectl apply -R -f tekton
 tkn pipelinerun logs pack-build-builder-push-run -f
 ```
 
-## Test if the ubi builder image is working
+## Test if the ubi builder image created is working
 
 ```bash
 mvn io.quarkus.platform:quarkus-maven-plugin:3.3.2:create \
@@ -71,9 +75,6 @@ REGISTRY_HOST="kind-registry.local:5000"
 docker pull quay.io/snowdrop/ubi-builder:latest
 pack build ${REGISTRY_HOST}/quarkus-hello:1.0 \
      --builder quay.io/snowdrop/ubi-builder \
-     -e BP_NATIVE_IMAGE="false" \
-     -e BP_MAVEN_BUILT_ARTIFACT="target/quarkus-app/lib/ target/quarkus-app/*.jar target/quarkus-app/app/ target/quarkus-app/quarkus/" \
-     -e BP_MAVEN_BUILD_ARGUMENTS="package -DskipTests=true -Dmaven.javadoc.skip=true -Dquarkus.package.type=fast-jar" \
      --volume $HOME/.m2:/home/cnb/.m2:rw \
      --path .  
 docker run -i --rm -p 8080:8080 kind-registry.local:5000/quarkus-hello:1.0
