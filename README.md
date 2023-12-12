@@ -67,7 +67,7 @@ kubectl create secret generic fedora-vm-ssh-key --from-file=key=$HOME/.ssh/id_rs
 
 echo "Creating a DataVolume using as registry image our customized Fedora Cloud OS packaging: podman, socat"
 kubectl create ns vm-images
-kubectl apply -n vm-images -f resources/01-quay-to-pvc-datavolume.yml
+kubectl apply -n vm-images -f resources/0.1-quay-to-pvc-datavolume.yml
 
 echo "Creating the Fedora VM hosting podman & socat and exposing it under port => <VM_IP>:2376"
 kubectl apply -f resources/02-fedora-dev-virtualmachine.yml

@@ -13,7 +13,7 @@ spec:
     - name: revision
       value: main
     - name: pathInRepo
-      value: /tekton/pipeline/pack-builder-image/01/pack-builder-image.yml
+      value: /tekton/pipeline/pack-builder-image/0.1/pack-builder-image.yml
 
   params:
     - name: gitUbiBuilderUrl
