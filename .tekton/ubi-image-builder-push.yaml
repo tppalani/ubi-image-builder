@@ -45,7 +45,7 @@ spec:
     - name: revision
       value: '{{revision}}'
     - name: debug
-      value: "false"
+      value: "true"
     # Pack client parameters
     - name: registryName
       value: quay.io
