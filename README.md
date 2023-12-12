@@ -1,5 +1,7 @@
 # Home project of: ubi-image-builder
 
+TODO: Describe what is the purpose of this project like the flow needed to implement
+
 Paketo GitHub flows to build the:
 - Builder image: https://github.com/paketo-community/builder-ubi-base
 - Buildpacks: https://github.com/paketo-buildpacks/pipeline-builder/tree/release-2.x/.github/workflows
