@@ -167,7 +167,7 @@ spec:
           - name: PACK_CLI_IMAGE_VERSION
             value: '$(params.imageTag)'
           - name: BUILDER_IMAGE_NAME
-            value: '$(params.output-image')
+            value: '$(params.output-image)'
           - name: PACK_BUILDER_TOML
             value: ubi-builder.toml
           - name: PACK_CMD_FLAGS
