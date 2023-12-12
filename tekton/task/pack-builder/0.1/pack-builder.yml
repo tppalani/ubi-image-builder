@@ -58,7 +58,7 @@ spec:
       args:
         - builder
         - create
-        - "$(params.BUILDER_IMAGE_NAME)
+        - "$(params.BUILDER_IMAGE_NAME)"
         - --config
         - "$(params.PACK_BUILDER_TOML)"
         - "$(params.PACK_CMD_FLAGS[*])"
