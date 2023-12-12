@@ -17,10 +17,17 @@ spec:
     - name: data-store
     - name: pack-workspace
   params:
+    - description: A boolean value used to execute or not a task
+      default: "false"
+      name: debug
     - name: gitUbiBuilderUrl
       type: string
       description: Url of the git project containing the ubi builder imageproject
       default: ""
+    - description: Source directory where code is cloned
+      name: source-dir
+      default: "."
+      type: string
     - name: imageUrl
       type: string
       description: Pack image url
@@ -45,27 +52,7 @@ spec:
         - name: source-dir
           workspace: source-dir
 
-    #- # Enable Experimental Pack Features
-    #  name: pack-enable-experimental
-    #  runAfter:
-    #    - git-clone
-    #  taskRef:
-    #    name: pack
-    #  params:
-    #    - name: PACK_IMAGE
-    #      value: '$(params.imageUrl)'
-    #    - name: PACK_VERSION
-    #      value: '$(params.imageTag)'
-    #    - name: PACK_ARGS
-    #      value:
-    #        - config
-    #        - experimental
-    #        - "true"
-    #  workspaces:
-    #    - name: source-dir
-    #      workspace: source-dir
-
-    - name: fetch-config-secret
+    - name: fetch-packconfig-registrysecret
       runAfter:
         - git-clone
       taskSpec:
@@ -86,7 +73,11 @@ spec:
 
     - name: list-files
       runAfter:
-        - fetch-config-secret
+        - fetch-packconfig-registrysecret
+      when:
+        - input: $(params.debug)
+          operator: in
+          values: [ "true" ]
       taskSpec:
         steps:
           - name: list-source-workspace
@@ -109,7 +100,7 @@ spec:
 
     - name: pack
       runAfter:
-        - list-files
+        - fetch-packconfig-registrysecret
       taskRef:
         resolver: git
         params:

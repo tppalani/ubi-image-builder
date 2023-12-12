@@ -16,6 +16,8 @@ spec:
       value: /tekton/pipeline/pack-builder-image/0.1/pack-builder-image.yml
 
   params:
+    - name: debug
+      value: "true"
     - name: gitUbiBuilderUrl
       value: https://github.com/redhat-buildpacks/ubi-image-builder.git
     - name: packCmdBuilderArgs
