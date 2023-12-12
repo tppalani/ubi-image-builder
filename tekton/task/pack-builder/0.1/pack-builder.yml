@@ -27,6 +27,9 @@ spec:
       default: latest
       description: Pack client version
       type: string
+    - name: BUILDER_IMAGE_NAME
+      description: The name of the builder image to create.
+      type: string
     - name: PACK_BUILDER_TOML
       default: builder.toml
       description: The builder toml file to use for the pack builder create command.
@@ -55,6 +58,7 @@ spec:
       args:
         - builder
         - create
+        - "$(params.BUILDER_IMAGE_NAME)
         - --config
         - "$(params.PACK_BUILDER_TOML)"
         - "$(params.PACK_CMD_FLAGS[*])"
