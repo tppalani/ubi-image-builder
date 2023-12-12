@@ -68,6 +68,7 @@ spec:
       description: Source directory
       name: source-dir
       type: string
+      default: "."
     - description: Pack client image url
       name: imageUrl
       type: string
@@ -80,6 +81,7 @@ spec:
       name: packCmdBuilderFlags
       type: array
       default: [""]
+
     tasks:
       - name: clone-repository
         params:

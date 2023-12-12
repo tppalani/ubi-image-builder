@@ -18,27 +18,28 @@ spec:
     - name: pack-workspace
   params:
     - description: A boolean value used to execute or not a task
-      default: "false"
       name: debug
-    - name: gitUbiBuilderUrl
       type: string
-      description: Url of the git project containing the ubi builder imageproject
+      default: "false"
+    - description: Url of the git project containing the ubi builder imageproject
+      name: gitUbiBuilderUrl
+      type: string
       default: ""
     - description: Source directory where code is cloned
       name: source-dir
+      type: string
       default: "."
+    - description: Pack client image url
+      name: imageUrl
       type: string
-    - name: imageUrl
-      type: string
-      description: Pack image url
       default: buildpacksio/pack
-    - name: imageTag
+    - description: Pack client image tag
+      name: imageTag
       type: string
-      description: Pack image tag
       default: latest
-    - name: packCmdBuilderArgs
+    - description: Pack builder command flags
+      name: packCmdBuilderFlags
       type: array
-      description: Pack command and arguments to execute
       default: [""]
 
   tasks:
@@ -87,7 +88,6 @@ spec:
               ls -la $(workspaces.pack-workspace.path)/
               
               ls -la $(workspaces.pack-workspace.path)/.docker/
-              
               cat $(workspaces.pack-workspace.path)/.docker/config.json
               
               echo "List files under: $(workspaces.source-dir.path)"
@@ -98,7 +98,7 @@ spec:
         - name: source-dir
           workspace: source-dir
 
-    - name: pack
+    - name: pack-builder
       runAfter:
         - fetch-packconfig-registrysecret
       taskRef:
@@ -109,14 +109,20 @@ spec:
         - name: revision
           value: main
         - name: pathInRepo
-          value: /tekton/task/pack/0.1/pack-builder.yml
+          value: /tekton/task/pack-builder/0.1/pack-builder.yml
       params:
-        - name: PACK_IMAGE
+        - name: PACK_SOURCE_DIR
+          value: '$(params.source-dir)'
+        - name: PACK_CLI_IMAGE
           value: '$(params.imageUrl)'
-        - name: PACK_VERSION
+        - name: PACK_CLI_IMAGE_VERSION
           value: '$(params.imageTag)'
-        - name: PACK_ARGS
-          value: ["$(params.packCmdBuilderArgs)"]
+        - name: BUILDER_IMAGE_NAME
+          value: '$(params.output-image)'
+        - name: PACK_BUILDER_TOML
+          value: ubi-builder.toml
+        - name: PACK_CMD_FLAGS
+          value: [ "$(params.packCmdBuilderFlags)" ]
       workspaces:
         - name: source-dir
           workspace: source-dir
