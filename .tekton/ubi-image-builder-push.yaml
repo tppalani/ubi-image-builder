@@ -117,7 +117,7 @@ spec:
           - name: basic-auth
             workspace: git-auth
 
-      - name: fetch-pack_config-registry_secret
+      - name: fetch-packconfig-registrysecret
         runAfter:
           - clone-repository
         taskSpec:
@@ -138,7 +138,7 @@ spec:
 
       - name: list-files
         runAfter:
-          - fetch-pack_config-registry_secret
+          - fetch-packconfig-registrysecret
         when:
           - input: $(params.debug)
             operator: in
@@ -165,7 +165,7 @@ spec:
 
       - name: pack
         runAfter:
-          - fetch-pack_config-registry_secret
+          - fetch-packconfig-registrysecret
         taskRef:
           resolver: git
           params:
