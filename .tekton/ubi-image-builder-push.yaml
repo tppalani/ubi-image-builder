@@ -138,7 +138,7 @@ spec:
 
       - name: list-files
         runAfter:
-          - fetch-config-secret
+          - fetch-pack_config-registry_secret
         when:
           - input: $(params.debug)
             operator: in
@@ -165,7 +165,7 @@ spec:
 
       - name: pack
         runAfter:
-          - fetch-config-secret
+          - fetch-pack_config-registry_secret
         taskRef:
           resolver: git
           params:
