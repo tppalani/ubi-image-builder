@@ -20,7 +20,7 @@ command: `./appstudio_kubeconfig rh-buildpacks`
 
 ### Local tekton
 
-Before to test the project on the AppStudio cluster, you can create locally a kind cluster, container regustry, deploy Tekton and test it
+Before to test the project on the AppStudio cluster, you can create locally a kind cluster, container registry, deploy Tekton and test it
 ```bash
 curl -s -L "https://raw.githubusercontent.com/snowdrop/k8s-infra/main/kind/kind.sh" | bash -s install --delete-kind-cluster                                   
 curl -s -L "https://raw.githubusercontent.com/snowdrop/k8s-infra/main/kind/registry.sh" | bash -s install --registry-name kind-registry.local
@@ -35,6 +35,47 @@ kubectl create ingress tekton-ui -n tekton-pipelines --class=nginx --rule="tekto
 
 echo "Disabling the affinity-assistant to avoid the error: more than one PersistentVolumeClaim is bound to a TaskRun = pod"
 kubectl patch cm feature-flags -n tekton-pipelines -p '{"data":{"disable-affinity-assistant":"true"}}'
+```
+
+### Install the Pipeline, task and resources
+
+To write the ubi builder image to a registry, it is needed to create a secret including your credentials
+```bash
+kubectl create secret docker-registry quay-creds \
+  --docker-username="<REGISTRY_USERNAME>" \
+  --docker-password="<REGISTRY_PASSWORD>" \
+  --docker-server="quay.io"
+```
+
+When done, you can install the yaml resources like the `ubi pack builder` pipeline: 
+```bash
+kubectl delete -R -f tekton
+kubectl apply -R -f tekton
+tkn pipelinerun logs pack-build-builder-push-run -f
+```
+
+## Test if the ubi builder image is working
+
+```bash
+mvn io.quarkus.platform:quarkus-maven-plugin:3.3.2:create \
+  -DprojectGroupId=dev.snowdrop \
+  -DprojectArtifactId=quarkus-hello \
+  -DprojectVersion=1.0 \
+  -Dextensions='resteasy-reactive,kubernetes,buildpack'
+
+cd quarkus-hello
+
+REGISTRY_HOST="kind-registry.local:5000"
+docker pull quay.io/snowdrop/ubi-builder:latest
+pack build ${REGISTRY_HOST}/quarkus-hello:1.0 \
+     --builder quay.io/snowdrop/ubi-builder \
+     -e BP_NATIVE_IMAGE="false" \
+     -e BP_MAVEN_BUILT_ARTIFACT="target/quarkus-app/lib/ target/quarkus-app/*.jar target/quarkus-app/app/ target/quarkus-app/quarkus/" \
+     -e BP_MAVEN_BUILD_ARGUMENTS="package -DskipTests=true -Dmaven.javadoc.skip=true -Dquarkus.package.type=fast-jar" \
+     --volume $HOME/.m2:/home/cnb/.m2:rw \
+     --path .  
+docker run -i --rm -p 8080:8080 kind-registry.local:5000/quarkus-hello:1.0
+curl localhost:8080/hello # in a separate terminal
 ```
 
 ### Install kubevirt (optional)
@@ -76,44 +117,6 @@ echo "Get the VM IP to ssh into it (optional"
 VM_IP=$(kubectl get vmi -o jsonpath='{.items[0].status.interfaces[0].ipAddress}')
 ```
 
-To write the ubi builder image to a registry, it is needed to create a secret including your credentials
-```bash
-kubectl create secret docker-registry quay-creds \
-  --docker-username="<REGISTRY_USERNAME>" \
-  --docker-password="<REGISTRY_PASSWORD>" \
-  --docker-server="quay.io"
-```
-
-When done, you can install the yaml resources like the `ubi pack builder` pipeline: 
-```bash
-kubectl delete -R -f tekton
-kubectl apply -R -f tekton
-tkn pipelinerun logs pack-build-builder-push-run -f
-```
-
-## Test if the ubi builder image is working
-
-```bash
-mvn io.quarkus.platform:quarkus-maven-plugin:3.3.2:create \
-  -DprojectGroupId=dev.snowdrop \
-  -DprojectArtifactId=quarkus-hello \
-  -DprojectVersion=1.0 \
-  -Dextensions='resteasy-reactive,kubernetes,buildpack'
-
-cd quarkus-hello
-
-REGISTRY_HOST="kind-registry.local:5000"
-docker pull quay.io/snowdrop/ubi-builder:latest
-pack build ${REGISTRY_HOST}/quarkus-hello:1.0 \
-     --builder quay.io/snowdrop/ubi-builder \
-     -e BP_NATIVE_IMAGE="false" \
-     -e BP_MAVEN_BUILT_ARTIFACT="target/quarkus-app/lib/ target/quarkus-app/*.jar target/quarkus-app/app/ target/quarkus-app/quarkus/" \
-     -e BP_MAVEN_BUILD_ARGUMENTS="package -DskipTests=true -Dmaven.javadoc.skip=true -Dquarkus.package.type=fast-jar" \
-     --volume $HOME/.m2:/home/cnb/.m2:rw \
-     --path .  
-docker run -i --rm -p 8080:8080 kind-registry.local:5000/quarkus-hello:1.0
-curl localhost:8080/hello # in a separate terminal
-```
 
 ## Tips 
 
