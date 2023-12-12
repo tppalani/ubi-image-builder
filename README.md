@@ -1,4 +1,4 @@
-# ubi-image-builder
+# Home project of: ubi-image-builder
 
 Paketo GitHub flows to build the:
 - Builder image: https://github.com/paketo-community/builder-ubi-base
