@@ -9,7 +9,7 @@ Paketo GitHub flows to build the:
 ## Pre-requisites
 
 - Have an account and access to: https://console.redhat.com/preview/application-pipeline/
-- Be part of the workspace `rh-biodlpacks`. See: https://console.redhat.com/preview/application-pipeline/access/workspaces/rh-buildpacks
+- Be part of the workspace `rh-Buildpacks`. See: https://console.redhat.com/preview/application-pipeline/access/workspaces/rh-buildpacks
 - Kubectl, Tekton installed & [Tekton client](https://tekton.dev/docs/cli/)
 - [krew](https://krew.sigs.k8s.io/), [oidc login](https://github.com/int128/kubelogin), [konfig](https://github.com/corneliusweig/konfig) & [ctx](https://github.com/ahmetb/kubectx)
 
