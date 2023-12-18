@@ -14,7 +14,7 @@ metadata:
     appstudio.openshift.io/component: ubi-image-builder
     pipelines.appstudio.openshift.io/type: build
     dev.snowdrop.ubi/builder-image: "3"
-  name: ubi-image-builder-on-push
+  name: ubi-image-builder-on-push-1
   namespace: rh-buildpacks-tenant
 spec:
   # TODO: To be refactored
