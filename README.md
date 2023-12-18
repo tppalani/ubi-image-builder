@@ -131,3 +131,6 @@ pushd /path/to/export-github-flows/
 ./scripts/export-jobs.sh $GIT_DIR/github/paketo-builder-flow.yaml > $GIT_DIR/github/paketo-builder-push-bash.txt
 popd
 ```
+
+New build: 1 !
+
