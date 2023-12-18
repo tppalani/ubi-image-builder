@@ -13,6 +13,7 @@ metadata:
     appstudio.openshift.io/application: ubi-image-builder
     appstudio.openshift.io/component: ubi-image-builder
     pipelines.appstudio.openshift.io/type: build
+    dev.snowdrop.ubi/builder-image: "1"
   name: ubi-image-builder-on-push
   namespace: rh-buildpacks-tenant
 spec:
