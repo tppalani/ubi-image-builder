@@ -132,5 +132,5 @@ pushd /path/to/export-github-flows/
 popd
 ```
 
-New build: 1 !
+New build: 2 !
 
