@@ -5,7 +5,7 @@ metadata:
     build.appstudio.openshift.io/repo: https://github.com/redhat-buildpacks/ubi-image-builder?rev={{revision}}
     build.appstudio.redhat.com/commit_sha: '{{revision}}'
     build.appstudio.redhat.com/target_branch: '{{target_branch}}'
-    build.appstudio.openshift.io/request: trigger-pac-build"
+    build.appstudio.openshift.io/request: trigger-pac-build
     pipelinesascode.tekton.dev/max-keep-runs: "3"
     pipelinesascode.tekton.dev/on-cel-expression: event == "push" && target_branch
       == "main"
