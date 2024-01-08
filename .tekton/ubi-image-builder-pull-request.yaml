@@ -81,6 +81,15 @@ spec:
       name: packCmdBuilderFlags
       type: array
       default: [""]
+    - description: Execute the build with network isolation
+      default: "false"
+      name: hermetic
+      type: string
+    - description: Build dependencies to be prefetched by Cachi2
+      default: ""
+      name: prefetch-input
+      type: string
+
     tasks:
       - name: clone-repository
         params:
@@ -148,9 +157,34 @@ spec:
           - name: source-dir
             workspace: source-dir
 
+      - name: prefetch-dependencies
+        params:
+          - name: input
+            value: $(params.prefetch-input)
+        runAfter:
+          - clone-repository
+        taskRef:
+          params:
+            - name: name
+              value: prefetch-dependencies
+            - name: bundle
+              value: quay.io/redhat-appstudio-tekton-catalog/task-prefetch-dependencies:0.1@sha256:563b91f72adf9b3b93f990f7c1d140f79749af837135aa07212347cb9ed79a34
+            - name: kind
+              value: task
+          resolver: bundles
+        when:
+          - input: $(params.hermetic)
+            operator: in
+            values:
+            - "true"
+        workspaces:
+          - name: source
+            workspace: workspace
+            
       - name: pack-builder
         runAfter:
           - fetch-packconfig-registrysecret
+          - prefetch-dependencies
         taskRef:
           resolver: git
           params:

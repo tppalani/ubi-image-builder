@@ -4,17 +4,17 @@ metadata:
   annotations:
     build.appstudio.openshift.io/repo: https://github.com/redhat-buildpacks/ubi-image-builder?rev={{revision}}
     build.appstudio.redhat.com/commit_sha: '{{revision}}'
+    build.appstudio.redhat.com/pull_request_number: '{{pull_request_number}}'
     build.appstudio.redhat.com/target_branch: '{{target_branch}}'
-    build.appstudio.openshift.io/request: trigger-pac-build
     pipelinesascode.tekton.dev/max-keep-runs: "3"
-    pipelinesascode.tekton.dev/on-cel-expression: event == "push" && target_branch
+    pipelinesascode.tekton.dev/on-cel-expression: event == "pull_request" && target_branch
       == "main"
   labels:
     appstudio.openshift.io/application: ubi-image-builder
     appstudio.openshift.io/component: ubi-image-builder
     pipelines.appstudio.openshift.io/type: build
-    dev.snowdrop.ubi/builder-image: "3"
-  name: ubi-image-builder-on-push-1
+    dev.snowdrop.ubi/builder-image: "1"
+  name: ubi-image-builder-on-pull-request-test
   namespace: rh-buildpacks-tenant
 spec:
   # TODO: To be refactored
@@ -27,7 +27,6 @@ spec:
   #      value: main
   #    - name: pathInRepo
   #      value: /tekton/pipeline/pack-builder-image/0.1/pack-builder-image.yml
-
   params:
     # RHTAP parameters
     - name: git-url
@@ -37,7 +36,7 @@ spec:
     - name: image-expires-after
       value: 5d
     - name: output-image
-      value: quay.io/redhat-user-workloads/rh-buildpacks-tenant/ubi-image-builder/ubi-image-builder:{{revision}}
+      value: quay.io/redhat-user-workloads/rh-buildpacks-tenant/ubi-image-builder/ubi-image-builder:on-pr-{{revision}}
     - name: path-context
       value: .
     - name: revision
@@ -49,6 +48,8 @@ spec:
       value:
         - -v
         - --publish
+    - name: hermetic
+      value: "true"
 
   pipelineSpec:
     params:
@@ -70,7 +71,6 @@ spec:
       description: Source directory
       name: source-dir
       type: string
-      default: "."
     - description: Pack client image url
       name: imageUrl
       type: string
@@ -114,21 +114,43 @@ spec:
           - name: basic-auth
             workspace: git-auth
 
-      - name: fetch-packconfig-registrysecret
+      - name: prefetch-dependencies
+        params:
+          - name: input
+            value: $(params.prefetch-input)
         runAfter:
           - clone-repository
         taskRef:
-          name: fetch-packconfig-registrysecret
-        #taskSpec:
-        #  steps:
-        #    - image: quay.io/centos/centos:latest
-        #      script: |
-        #        echo "Copy pack config.toml to $(workspaces.pack-workspace.path)"
-        #        cp $(workspaces.data-store.path)/config.toml $(workspaces.pack-workspace.path)
-        #
-        #        echo "Copy .dockerconfigjson to $(workspaces.pack-workspace.path)/.docker/config.json"
-        #        mkdir -p $(workspaces.pack-workspace.path)/.docker
-        #        cp $(workspaces.data-store.path)/.dockerconfigjson $(workspaces.pack-workspace.path)/.docker/config.json
+          params:
+            - name: name
+              value: prefetch-dependencies
+            - name: bundle
+              value: quay.io/redhat-appstudio-tekton-catalog/task-prefetch-dependencies:0.1@sha256:563b91f72adf9b3b93f990f7c1d140f79749af837135aa07212347cb9ed79a34
+            - name: kind
+              value: task
+          resolver: bundles
+        when:
+          - input: $(params.hermetic)
+            operator: in
+            values:
+            - "true"
+        workspaces:
+          - name: source
+            workspace: source-dir
+
+      - name: fetch-packconfig-registrysecret
+        runAfter:
+          - clone-repository
+        taskSpec:
+          steps:
+            - image: quay.io/centos/centos:latest
+              script: |
+                echo "Copy pack config.toml to $(workspaces.pack-workspace.path)"
+                cp $(workspaces.data-store.path)/config.toml $(workspaces.pack-workspace.path)
+                
+                echo "Copy .dockerconfigjson to $(workspaces.pack-workspace.path)/.docker/config.json"
+                mkdir -p $(workspaces.pack-workspace.path)/.docker
+                cp $(workspaces.data-store.path)/.dockerconfigjson $(workspaces.pack-workspace.path)/.docker/config.json
         workspaces:
           - name: data-store
             workspace: data-store
@@ -138,6 +160,7 @@ spec:
       - name: list-files
         runAfter:
           - fetch-packconfig-registrysecret
+          - prefetch-dependencies
         when:
           - input: $(params.debug)
             operator: in
@@ -161,30 +184,6 @@ spec:
           - name: source-dir
             workspace: source-dir
 
-      - name: prefetch-dependencies
-        params:
-          - name: input
-            value: $(params.prefetch-input)
-        runAfter:
-          - clone-repository
-        taskRef:
-          params:
-            - name: name
-              value: prefetch-dependencies
-            - name: bundle
-              value: quay.io/redhat-appstudio-tekton-catalog/task-prefetch-dependencies:0.1@sha256:563b91f72adf9b3b93f990f7c1d140f79749af837135aa07212347cb9ed79a34
-            - name: kind
-              value: task
-          resolver: bundles
-        when:
-          - input: $(params.hermetic)
-            operator: in
-            values:
-            - "true"
-        workspaces:
-          - name: source
-            workspace: workspace
-
       - name: pack-builder
         runAfter:
           - fetch-packconfig-registrysecret
@@ -206,7 +205,7 @@ spec:
           - name: PACK_CLI_IMAGE_VERSION
             value: '$(params.imageTag)'
           - name: BUILDER_IMAGE_NAME
-            value: '$(params.output-image)'
+            value: '$(params.output-image)-TEST'
           - name: PACK_BUILDER_TOML
             value: ubi-builder.toml
           - name: PACK_CMD_FLAGS
