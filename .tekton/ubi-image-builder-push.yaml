@@ -49,6 +49,8 @@ spec:
       value:
         - -v
         - --publish
+    - name: hermetic
+      value: "true"
 
   pipelineSpec:
     params:
@@ -114,6 +116,29 @@ spec:
           - name: basic-auth
             workspace: git-auth
 
+      - name: prefetch-dependencies
+        params:
+          - name: input
+            value: $(params.prefetch-input)
+        runAfter:
+          - clone-repository
+        taskRef:
+          params:
+            - name: name
+              value: prefetch-dependencies
+            - name: bundle
+              value: quay.io/redhat-appstudio-tekton-catalog/task-prefetch-dependencies:0.1@sha256:563b91f72adf9b3b93f990f7c1d140f79749af837135aa07212347cb9ed79a34
+            - name: kind
+              value: task
+          resolver: bundles
+        when:
+          - input: $(params.hermetic)
+            operator: in
+            values:
+            - "true"
+        workspaces:
+          - name: source
+            workspace: source-dir
       - name: fetch-packconfig-registrysecret
         runAfter:
           - clone-repository
@@ -138,6 +163,7 @@ spec:
       - name: list-files
         runAfter:
           - fetch-packconfig-registrysecret
+          - prefetch-dependencies
         when:
           - input: $(params.debug)
             operator: in
@@ -160,30 +186,6 @@ spec:
             workspace: pack-workspace
           - name: source-dir
             workspace: source-dir
-
-      - name: prefetch-dependencies
-        params:
-          - name: input
-            value: $(params.prefetch-input)
-        runAfter:
-          - clone-repository
-        taskRef:
-          params:
-            - name: name
-              value: prefetch-dependencies
-            - name: bundle
-              value: quay.io/redhat-appstudio-tekton-catalog/task-prefetch-dependencies:0.1@sha256:563b91f72adf9b3b93f990f7c1d140f79749af837135aa07212347cb9ed79a34
-            - name: kind
-              value: task
-          resolver: bundles
-        when:
-          - input: $(params.hermetic)
-            operator: in
-            values:
-            - "true"
-        workspaces:
-          - name: source
-            workspace: workspace
 
       - name: pack-builder
         runAfter:
