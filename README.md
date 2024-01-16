@@ -1,7 +1,7 @@
 # Home project of: ubi-image-builder
 
-The goal of this project is to build the builder image using the Java and Node.js buildpacks released for the image ubi 8.
-This is a first step toward to automate fully the process to release the needed images like the buildpacks and/or extensions.
+The goal of this project is to build the builder image using the Java and Node.js Buildpacks released for the image ubi 8.
+This is a first step toward to automate fully the process to release the needed images like the Buildpacks and/or extensions.
 To achieve this goal, it will be needed to transpose the existing GitHub workflows created by the Paketo community to different Tekton pipelines.
 
 More information around the building mechanisms designed by Paketo are documented [here](https://docs.google.com/document/d/1D5J14phPzXIN4-QVMs4xMy8NPuqN72LTbq6Eu1E1PE4/edit)
