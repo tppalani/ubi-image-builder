@@ -85,46 +85,6 @@ docker run -i --rm -p 8080:8080 kind-registry.local:5000/quarkus-hello:1.0
 curl localhost:8080/hello # in a separate terminal
 ```
 
-### Install kubevirt (optional)
-
-```bash
-export KUBEVIRT_VERSION=v1.1.0
-export KUBEVIRT_CDI_VERSION=v1.58.0
-export KUBEVIRT_COMMON_INSTANCETYPES_VERSION=v0.3.2
-echo "Deploying KubeVirt"
-kubectl apply -f "https://github.com/kubevirt/kubevirt/releases/download/${KUBEVIRT_VERSION}/kubevirt-operator.yaml"
-kubectl apply -f "https://github.com/kubevirt/kubevirt/releases/download/${KUBEVIRT_VERSION}/kubevirt-cr.yaml"
-kubectl -n kubevirt patch kubevirt kubevirt --type=merge --patch '{"spec":{"configuration":{"developerConfiguration":{"useEmulation":true}}}}'
-
-echo "Deploying KubeVirt containerized-data-importer"
-kubectl apply -f "https://github.com/kubevirt/containerized-data-importer/releases/download/${KUBEVIRT_CDI_VERSION}/cdi-operator.yaml"
-kubectl apply -f "https://github.com/kubevirt/containerized-data-importer/releases/download/${KUBEVIRT_CDI_VERSION}/cdi-cr.yaml"
-
-echo "Waiting for KubeVirt to be ready"
-kubectl wait --for=condition=Available kubevirt kubevirt --namespace=kubevirt --timeout=5m
-          
-echo "Patch the StorageProfile to use the storageclass standard and give ReadWrite access"
-kubectl patch --type merge -p '{"spec": {"claimPropertySets": [{"accessModes": ["ReadWriteOnce"]}]}}' StorageProfile standard
-
-echo "Grant more rights to the default serviceaccount to access Kubevirt & Kubevirt CDI"
-kubectl create clusterrolebinding pod-kubevirt-viewer --clusterrole=kubevirt.io:view --serviceaccount=default:default
-kubectl create clusterrolebinding cdi-kubevirt-viewer --clusterrole=cdi.kubevirt.io:view --serviceaccount=default:default
-
-echo "Creating the kubernetes secret storing the public key"
-kubectl create secret generic fedora-vm-ssh-key --from-file=key=$HOME/.ssh/id_rsa.pub     
-
-echo "Creating a DataVolume using as registry image our customized Fedora Cloud OS packaging: podman, socat"
-kubectl create ns vm-images
-kubectl apply -n vm-images -f resources/0.1-quay-to-pvc-datavolume.yml
-
-echo "Creating the Fedora VM hosting podman & socat and exposing it under port => <VM_IP>:2376"
-kubectl apply -f resources/02-fedora-dev-virtualmachine.yml
-
-echo "Get the VM IP to ssh into it (optional"
-VM_IP=$(kubectl get vmi -o jsonpath='{.items[0].status.interfaces[0].ipAddress}')
-```
-
-
 ## Tips 
 
 To convert the GitHub flows into bash scripts, use this [export-to-bash](https://github.com/snowdrop/export-github-flows/blob/main/README.md) project and the command
