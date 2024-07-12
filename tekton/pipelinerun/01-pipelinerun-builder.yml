@@ -22,13 +22,13 @@ spec:
       value: https://github.com/redhat-buildpacks/ubi-image-builder.git
     - name: packCmdBuilderFlags
       value:
-      - builder
-      - create
-      - -v
-      - quay.io/snowdrop/ubi-builder
-      - --config
-      - ubi-builder.toml
-      - --publish
+      - "builder"
+      - "create"
+      - "-v"
+      - "quay.io/snowdrop/ubi-builder"
+      - "--config"
+      - "ubi-builder.toml"
+      - "--publish"
 
   workspaces:
     - name: source-dir
