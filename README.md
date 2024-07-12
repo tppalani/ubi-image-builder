@@ -67,11 +67,11 @@ tkn pipelinerun logs pack-build-builder-push-run -f
 ## Test if the ubi builder image created is working
 
 ```bash
-mvn io.quarkus.platform:quarkus-maven-plugin:3.8.5:create \
+mvn io.quarkus.platform:quarkus-maven-plugin:3.12.2:create \
   -DprojectGroupId=dev.snowdrop \
   -DprojectArtifactId=quarkus-hello \
   -DprojectVersion=1.0 \
-  -Dextensions='resteasy-reactive,kubernetes,buildpack'
+  -Dextensions='resteasy,kubernetes,buildpack'
 
 cd quarkus-hello
 
@@ -80,6 +80,7 @@ docker pull quay.io/snowdrop/ubi-builder:latest
 pack build ${REGISTRY_HOST}/quarkus-hello:1.0 \
      --builder quay.io/snowdrop/ubi-builder \
      --volume $HOME/.m2:/home/cnb/.m2:rw \
+     --env BP_JVM_VERSION=21 \
      --path .  
 docker run -i --rm -p 8080:8080 kind-registry.local:5000/quarkus-hello:1.0
 curl localhost:8080/hello # in a separate terminal
