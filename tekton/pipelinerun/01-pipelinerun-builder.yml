@@ -20,6 +20,8 @@ spec:
       value: "true"
     - name: git-url
       value: https://github.com/redhat-buildpacks/ubi-image-builder.git
+    - name: output-image
+      value: "quay.io/snowdrop/ubi-builder"
     - name: packCmdBuilderFlags
       value:
       # The args defined for the pack task already include the following
