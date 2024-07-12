@@ -20,7 +20,7 @@ spec:
       value: "true"
     - name: git-url
       value: https://github.com/redhat-buildpacks/ubi-image-builder.git
-    - name: packCmdBuilderArgs
+    - name: packCmdBuilderFlags
       value:
       - builder
       - create

@@ -41,7 +41,7 @@ spec:
       type: string
       default: latest
     - description: Pack builder command flags
-      name: packCmdBuilderArgs
+      name: packCmdBuilderFlags
       type: array
       default: [""]
 
