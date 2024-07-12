@@ -27,10 +27,10 @@ spec:
       # The args defined for the pack task already include the following
       #- "builder"
       #- "create"
-      #- "-v"
       #- "quay.io/snowdrop/ubi-builder"
       #- "--config"
       #- "ubi-builder.toml"
+      - "-v"
       - "--publish"
 
   workspaces:
