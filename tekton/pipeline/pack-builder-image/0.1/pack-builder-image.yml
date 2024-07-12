@@ -36,6 +36,10 @@ spec:
       name: imageTag
       type: string
       default: latest
+    - description: Name of the Builder image to create
+      name: output-image
+      type: string
+      default: latest
     - description: Pack builder command flags
       name: packCmdBuilderFlags
       type: array
