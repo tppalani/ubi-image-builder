@@ -1,6 +1,6 @@
 # Home project of: ubi-image-builder
 
-The goal of this project is to build the builder image using the Java and Node.js Buildpacks released for the image ubi 8.
+The goal of this project is to build the builder image using the Java and Node.js Buildpacks released for the Universal Base Image or UBI.
 This is a first step toward to automate fully the process to release the needed images like the Buildpacks and/or extensions.
 To achieve this goal, it will be needed to transpose the existing GitHub workflows created by the Paketo community to different Tekton pipelines.
 
@@ -67,11 +67,11 @@ tkn pipelinerun logs pack-build-builder-push-run -f
 ## Test if the ubi builder image created is working
 
 ```bash
-mvn io.quarkus.platform:quarkus-maven-plugin:3.3.2:create \
+mvn io.quarkus.platform:quarkus-maven-plugin:3.12.2:create \
   -DprojectGroupId=dev.snowdrop \
   -DprojectArtifactId=quarkus-hello \
   -DprojectVersion=1.0 \
-  -Dextensions='resteasy-reactive,kubernetes,buildpack'
+  -Dextensions='resteasy,kubernetes,buildpack'
 
 cd quarkus-hello
 
