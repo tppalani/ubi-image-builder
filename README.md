@@ -67,11 +67,11 @@ tkn pipelinerun logs pack-build-builder-push-run -f
 ## Test if the ubi builder image created is working
 
 ```bash
-mvn io.quarkus.platform:quarkus-maven-plugin:3.12.2:create \
+mvn io.quarkus.platform:quarkus-maven-plugin:3.8.5:create \
   -DprojectGroupId=dev.snowdrop \
   -DprojectArtifactId=quarkus-hello \
   -DprojectVersion=1.0 \
-  -Dextensions='resteasy,kubernetes,buildpack'
+  -Dextensions='resteasy-reactive,kubernetes,buildpack'
 
 cd quarkus-hello
 
