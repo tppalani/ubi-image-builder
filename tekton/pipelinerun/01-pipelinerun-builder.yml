@@ -18,7 +18,7 @@ spec:
   params:
     - name: debug
       value: "true"
-    - name: gitUbiBuilderUrl
+    - name: git-url
       value: https://github.com/redhat-buildpacks/ubi-image-builder.git
     - name: packCmdBuilderArgs
       value:
