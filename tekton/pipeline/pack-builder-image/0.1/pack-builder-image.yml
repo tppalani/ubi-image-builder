@@ -47,6 +47,7 @@ spec:
 
   tasks:
     - name: git-clone
+      # TODO: Check if we could use the git-clone task part of the tekton catalog instead of this one copied from redhat cop project
       taskRef:
         name: git-clone
       params:
