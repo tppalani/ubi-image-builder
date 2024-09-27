@@ -99,5 +99,5 @@ spec:
               ls -la $(workspaces.source-dir.path)/
         
         workspaces:
-        - name: source-dir
-          workspace: source-dir
+          - name: source-dir
+            workspace: source-dir
