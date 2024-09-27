@@ -98,6 +98,6 @@ spec:
               echo "List files under: $(workspaces.source-dir.path)"
               ls -la $(workspaces.source-dir.path)/
         
-        workspaces:
-          - name: source-dir
-            workspace: source-dir
+      workspaces:
+        - name: source-dir
+          workspace: source-dir
