@@ -89,5 +89,6 @@ spec:
             image: quay.io/centos/centos:latest
             script: |
               echo "List files under: $(workspaces.pack-workspace.path)"
+              ls -la $(workspaces.pack-workspace.path)/
             
   
