@@ -91,10 +91,10 @@ spec:
               echo "List files under: $(workspaces.pack-workspace.path)"
               ls -la $(workspaces.pack-workspace.path)/
 
-              ls -la $(workspaces.pack-workspace.path)/.docker/
-              cat $(workspaces.pack-workspace.path)/.docker/config.json
+              # ls -la $(workspaces.pack-workspace.path)/.docker/
+              # cat $(workspaces.pack-workspace.path)/.docker/config.json
 
-              ls -lrt /mnt/workspace
+              # ls -lrt /mnt/workspace
 
               # echo "Source Workspace Validatation"
               # pwd
