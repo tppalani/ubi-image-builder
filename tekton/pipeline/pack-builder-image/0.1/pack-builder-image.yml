@@ -88,12 +88,12 @@ spec:
           - name: list-source-workspace
             image: quay.io/centos/centos:latest
             script: |
-              echo "List files under: $(workspaces.pack-workspace.path)"
-              ls -la $(workspaces.pack-workspace.path)/
-              ls -lrt /mnt/workspace
+              # echo "List files under: $(workspaces.pack-workspace.path)"
+              # ls -la $(workspaces.pack-workspace.path)/
+                ls -lrt /mnt/workspace
 
               
         
-      # workspaces:
-      #   - name: source-dir
-      #     workspace: source-dir
+      workspaces:
+        - name: source-dir
+          workspace: source-dir
