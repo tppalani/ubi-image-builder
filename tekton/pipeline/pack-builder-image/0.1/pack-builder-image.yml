@@ -90,10 +90,9 @@ spec:
             script: |
               # echo "List files under: $(workspaces.pack-workspace.path)"
               # ls -la $(workspaces.pack-workspace.path)/
-                ls -lrt /mnt/workspace
 
               
         
       workspaces:
-        - name: source-dir
-          workspace: source-dir
+        - name: pack-workspace
+          workspace: pack-workspace
