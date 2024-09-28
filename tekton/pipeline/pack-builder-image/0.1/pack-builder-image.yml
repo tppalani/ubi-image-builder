@@ -80,19 +80,19 @@ spec:
         - name: pack-workspace
           workspace: pack-workspace
 
-    # - name: list-pack-files
-    #   runAfter:
-    #     - fetch-packconfig-registrysecret
-    #   when:
-    #     - input: $(params.debug)
-    #       operator: in
-    #       values: [ "true" ]
-    #   taskSpec:
-    #     steps:
-    #       - name: list-source-workspace
-    #         image: quay.io/centos/centos:latest
-    #         script: |
-    #             pwd
+    - name: list-pack-files
+      runAfter:
+        - fetch-packconfig-registrysecret
+      when:
+        - input: $(params.debug)
+          operator: in
+          values: [ "true" ]
+      taskSpec:
+        steps:
+          - name: list-source-workspace
+            image: quay.io/centos/centos:latest
+            script: |
+                pwd
                 # echo "List files under: $(workspaces.pack-workspace.path)"
                 # ls -la $(workspaces.pack-workspace.path)/
 
