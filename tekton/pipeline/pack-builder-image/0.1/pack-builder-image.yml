@@ -94,8 +94,8 @@ spec:
             image: quay.io/centos/centos:latest
             script: |
               echo "test"
-      # workspaces:
-      #   # - name: pack-workspace
-      #   #   workspace: pack-workspace
+      workspaces:
+        - name: pack-workspace
+          workspace: pack-workspace
       #   - name: source-dir
       #     workspace: source-dir
