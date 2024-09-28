@@ -84,10 +84,10 @@ spec:
     - name: list-pack-files
       runAfter:
         - fetch-packconfig-registrysecret
-      when:
-        - input: $(params.debug)
-          operator: in
-          values: [ "true" ]
+      # when:
+      #   - input: $(params.debug)
+      #     operator: in
+      #     values: [ "true" ]
       taskSpec:
         steps:
           - name: list-source-workspace
