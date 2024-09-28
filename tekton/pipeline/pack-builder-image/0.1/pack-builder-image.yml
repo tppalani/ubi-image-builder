@@ -64,12 +64,14 @@ spec:
         steps:
           - image: quay.io/centos/centos:latest
             script: |
-              echo "Copy pack config.toml to $(workspaces.pack-workspace.path)"
-              cp $(workspaces.data-store.path)/config.toml $(workspaces.pack-workspace.path)
+              pwd
+              ls -la
+              # echo "Copy pack config.toml to $(workspaces.pack-workspace.path)"
+              # cp $(workspaces.data-store.path)/config.toml $(workspaces.pack-workspace.path)
               
-              echo "Copy .dockerconfigjson to $(workspaces.pack-workspace.path)/.docker/config.json"
-              mkdir -p $(workspaces.pack-workspace.path)/.docker
-              cp $(workspaces.data-store.path)/.dockerconfigjson $(workspaces.pack-workspace.path)/.docker/config.json
+              # echo "Copy .dockerconfigjson to $(workspaces.pack-workspace.path)/.docker/config.json"
+              # mkdir -p $(workspaces.pack-workspace.path)/.docker
+              # cp $(workspaces.data-store.path)/.dockerconfigjson $(workspaces.pack-workspace.path)/.docker/config.json
       workspaces:
         - name: data-store
           workspace: data-store
