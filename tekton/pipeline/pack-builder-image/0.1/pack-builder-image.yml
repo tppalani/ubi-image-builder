@@ -68,12 +68,12 @@ spec:
               pwd
               ls -la data-store
               ls -la pack-workspace
-              # echo "Copy pack config.toml to $(workspaces.pack-workspace.path)"
-              # cp $(workspaces.data-store.path)/config.toml $(workspaces.pack-workspace.path)
+              echo "Copy pack config.toml to $(workspaces.pack-workspace.path)"
+              cp $(workspaces.data-store.path)/config.toml $(workspaces.pack-workspace.path)
               
-              # echo "Copy .dockerconfigjson to $(workspaces.pack-workspace.path)/.docker/config.json"
-              # mkdir -p $(workspaces.pack-workspace.path)/.docker
-              # cp $(workspaces.data-store.path)/.dockerconfigjson $(workspaces.pack-workspace.path)/.docker/config.json
+              echo "Copy .dockerconfigjson to $(workspaces.pack-workspace.path)/.docker/config.json"
+              mkdir -p $(workspaces.pack-workspace.path)/.docker
+              cp $(workspaces.data-store.path)/.dockerconfigjson $(workspaces.pack-workspace.path)/.docker/config.json
       workspaces:
         - name: data-store
           workspace: data-store
@@ -92,29 +92,18 @@ spec:
           - name: list-source-workspace
             image: quay.io/centos/centos:latest
             script: |
-              echo "List files under: $(workspaces.pack-workspace.path)"
-              ls -la $(workspaces.pack-workspace.path)/
+                pwd
+                ls -la
+              # echo "List files under: $(workspaces.pack-workspace.path)"
+              # ls -la $(workspaces.pack-workspace.path)/
 
-              ls -la $(workspaces.pack-workspace.path)/.docker/
-              cat $(workspaces.pack-workspace.path)/.docker/config.json
+              # ls -la $(workspaces.pack-workspace.path)/.docker/
+              # cat $(workspaces.pack-workspace.path)/.docker/config.json
+
+              # echo "List files under: $(workspaces.source-dir.path)"
+              # ls -la $(workspaces.source-dir.path)/
       workspaces:
         - name: pack-workspace
           workspace: pack-workspace
-
-    - name: list-source-files
-      runAfter:
-        - fetch-packconfig-registrysecret
-      when:
-        - input: $(params.debug)
-          operator: in
-          values: [ "true" ]
-      taskSpec:
-        steps:
-          - name: list-source-workspace
-            image: quay.io/centos/centos:latest
-            script: |
-              echo "List files under: $(workspaces.source-dir.path)"
-              ls -la $(workspaces.source-dir.path)/
-      workspaces:
         - name: source-dir
           workspace: source-dir
