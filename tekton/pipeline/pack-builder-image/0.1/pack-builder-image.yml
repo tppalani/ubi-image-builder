@@ -58,28 +58,28 @@ spec:
         - name: source-dir
           workspace: source-dir
 
-    - name: fetch-packconfig-registrysecret
-      runAfter:
-        - git-clone
-      taskSpec:
-        steps:
-          - image: quay.io/centos/centos:latest
-            script: |
-              cd /workspace
-              pwd
-              ls -la data-store
-              ls -la pack-workspace
-              echo "Copy pack config.toml to $(workspaces.pack-workspace.path)"
-              cp $(workspaces.data-store.path)/config.toml $(workspaces.pack-workspace.path)
+    # - name: fetch-packconfig-registrysecret
+    #   runAfter:
+    #     - git-clone
+    #   taskSpec:
+    #     steps:
+    #       - image: quay.io/centos/centos:latest
+    #         script: |
+    #           cd /workspace
+    #           pwd
+    #           ls -la data-store
+    #           ls -la pack-workspace
+    #           echo "Copy pack config.toml to $(workspaces.pack-workspace.path)"
+    #           cp $(workspaces.data-store.path)/config.toml $(workspaces.pack-workspace.path)
               
-              echo "Copy .dockerconfigjson to $(workspaces.pack-workspace.path)/.docker/config.json"
-              mkdir -p $(workspaces.pack-workspace.path)/.docker
-              cp $(workspaces.data-store.path)/.dockerconfigjson $(workspaces.pack-workspace.path)/.docker/config.json
-      workspaces:
-        - name: data-store
-          workspace: data-store
-        - name: pack-workspace
-          workspace: pack-workspace
+    #           echo "Copy .dockerconfigjson to $(workspaces.pack-workspace.path)/.docker/config.json"
+    #           mkdir -p $(workspaces.pack-workspace.path)/.docker
+    #           cp $(workspaces.data-store.path)/.dockerconfigjson $(workspaces.pack-workspace.path)/.docker/config.json
+    #   workspaces:
+    #     - name: data-store
+    #       workspace: data-store
+    #     - name: pack-workspace
+    #       workspace: pack-workspace
 
     - name: list-pack-files
       runAfter:
