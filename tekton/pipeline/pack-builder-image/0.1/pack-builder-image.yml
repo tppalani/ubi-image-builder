@@ -64,6 +64,7 @@ spec:
         steps:
           - image: quay.io/centos/centos:latest
             script: |
+              cd /workspace
               pwd
               ls -la
               # echo "Copy pack config.toml to $(workspaces.pack-workspace.path)"
