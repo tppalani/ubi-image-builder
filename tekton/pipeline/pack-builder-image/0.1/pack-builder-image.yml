@@ -94,6 +94,7 @@ spec:
             image: quay.io/centos/centos:latest
             script: |
               echo "test"
+              cd /workspace
       
       workspaces:
          # - name: data-store
