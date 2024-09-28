@@ -97,9 +97,9 @@ spec:
       
       workspaces:
          - name: data-store
-          workspace: data-store
-        - name: pack-workspace
-          workspace: pack-workspace
+           workspace: data-store
+         - name: pack-workspace
+           workspace: pack-workspace
         # - name: pack-workspace
         #   workspace: pack-workspace
         # - name: source-dir
