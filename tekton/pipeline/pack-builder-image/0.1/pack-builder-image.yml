@@ -101,8 +101,13 @@ spec:
 
                 echo "List files under: $(workspaces.data-store.path)"
                 ls -la $(workspaces.data-store.path)/
+
+                echo "List files under: $(workspaces.source-dir.path)"
+                ls -la $(workspaces.source-dir.path)/
       workspaces:
         - name: pack-workspace
           workspace: pack-workspace
         - name: data-store
           workspace: data-store
+        - name: source-dir
+          workspace: source-dir
