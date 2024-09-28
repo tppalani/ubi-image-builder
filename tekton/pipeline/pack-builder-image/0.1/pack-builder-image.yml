@@ -95,6 +95,7 @@ spec:
             script: |
               echo "test"
               cd /workspace
+              ls -la
       
       workspaces:
          # - name: data-store
