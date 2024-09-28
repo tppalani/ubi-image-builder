@@ -98,3 +98,5 @@ spec:
       workspaces:
         - name: source-dir
           workspace: source-dir
+        - name: pack-workspace
+          workspace: pack-workspace
