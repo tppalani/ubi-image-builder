@@ -93,7 +93,7 @@ spec:
             image: quay.io/centos/centos:latest
             script: |
                 pwd
-                ls -la
+                ls -la /workspace
               # echo "List files under: $(workspaces.pack-workspace.path)"
               # ls -la $(workspaces.pack-workspace.path)/
 
