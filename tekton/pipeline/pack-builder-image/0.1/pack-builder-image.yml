@@ -67,7 +67,7 @@ spec:
               cd /workspace
               pwd
               ls -la data-store
-              ls -la pack-workspace
+              #ls -la pack-workspace
               # echo "Copy pack config.toml to $(workspaces.pack-workspace.path)"
               # cp $(workspaces.data-store.path)/config.toml $(workspaces.pack-workspace.path)
               
