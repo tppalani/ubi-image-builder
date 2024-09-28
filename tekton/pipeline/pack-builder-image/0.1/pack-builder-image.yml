@@ -93,9 +93,8 @@ spec:
           - name: list-source-workspace
             image: quay.io/centos/centos:latest
             script: |
-              echo "test"
-              cd $(workspaces.source-dir.path)/source-code
-              ls -la
+              echo "List files under: $(workspaces.source-dir.path)"
+              ls -la $(workspaces.source-dir.path)/
       
       workspaces:
          # - name: data-store
