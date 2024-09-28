@@ -94,7 +94,7 @@ spec:
             image: quay.io/centos/centos:latest
             script: |
               echo "test"
-              cd /workspace
+              cd /workspace/source-dir
               ls -la
       
       workspaces:
