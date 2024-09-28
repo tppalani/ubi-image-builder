@@ -97,11 +97,7 @@ spec:
               ls -la $(workspaces.source-dir.path)/
       
       workspaces:
-         # - name: data-store
-         #   workspace: data-store
-         # - name: pack-workspace
-         #   workspace: pack-workspace
-        # - name: pack-workspace
-        #   workspace: pack-workspace
+        - name: pack-workspace
+          workspace: pack-workspace
         - name: source-dir
           workspace: source-dir
