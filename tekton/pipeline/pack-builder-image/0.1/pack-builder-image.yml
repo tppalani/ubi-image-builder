@@ -102,8 +102,8 @@ spec:
 
               # echo "List files under: $(workspaces.source-dir.path)"
               # ls -la $(workspaces.source-dir.path)/
-      # workspaces:
-      #   - name: pack-workspace
-      #     workspace: pack-workspace
+      workspaces:
+        - name: pack-workspace
+          workspace: pack-workspace
       #   - name: source-dir
       #     workspace: source-dir
